@@ -23,3 +23,4 @@ ${SAQUE_ENDPOINT}         /saque/
 ${PIX_ENDPOINT}           /pix/
 
 ${DOCUMENTOS_ENDPOINT}    /documentos/
+

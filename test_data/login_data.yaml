@@ -25,3 +25,12 @@ login_tests:
     password:
 
     esperado_status: 400
+
+
+  - nome: caracteres incorretos
+
+    username: fd¨$%$
+
+    password: fg#4%¨$#
+
+    esperado_status: 401 

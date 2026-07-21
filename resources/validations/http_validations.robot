@@ -12,10 +12,13 @@ Library    RequestsLibrary
 
 Validar Status HTTP
 
-    [Arguments]    ${response}    ${status}
+    [Arguments]
+    ...    ${response}
+    ...    ${status}
 
-    Status Should Be    ${status}    ${response}
-
+    Should Be Equal As Integers
+    ...    ${response.status_code}
+    ...    ${status}
 
 ############################################################
 # Converte Response para JSON

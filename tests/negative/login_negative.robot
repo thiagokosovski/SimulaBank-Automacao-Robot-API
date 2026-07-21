@@ -3,62 +3,18 @@
 Resource    ../../config/package.resource
 
 
-
 *** Test Cases ***
 
-CT004 - Login com senha inválida
-
+CT004 - Login Negativo (Data Driven)
 
     ########################################################
-    # Cria sessão HTTP
+    # Cria Sessão HTTP
     ########################################################
 
     Criar Sessão da API
 
-
-
     ########################################################
-    # Monta dados inválidos
+    # Executa todos os cenários negativos
     ########################################################
 
-    ${body}=    Create Dictionary
-    ...    username=usuario_teste
-    ...    password=senha_errada
-
-
-
-    ########################################################
-    # Executa login
-    ########################################################
-
-    ${response}=    Realizar POST
-    ...    ${API_PREFIX}${LOGIN_ENDPOINT}
-    ...    ${body}
-
-
-
-    ########################################################
-    # Valida Status HTTP esperado
-    ########################################################
-
-    Validar Status HTTP
-    ...    ${response}
-    ...    401
-
-
-
-    ########################################################
-    # Converte resposta para JSON
-    ########################################################
-
-    ${json}=    Converter Resposta para JSON
-    ...    ${response}
-
-
-
-    ########################################################
-    # Exibe retorno da API
-    ########################################################
-
-    Log To Console
-    ...    ${json}
+    Executar Cenários Negativos de Login
