@@ -21,11 +21,13 @@ venv/
 # ==========================
 # Robot Framework
 # ==========================
-log.html
-report.html
-output.xml
-
 reports/
+
+logs/
+
+output.xml
+report.html
+log.html
 
 # ==========================
 # VS Code

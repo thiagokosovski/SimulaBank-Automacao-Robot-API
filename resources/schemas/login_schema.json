@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "properties": {
+
+        "access": {
+            "type": "string"
+        },
+
+        "refresh": {
+            "type": "string"
+        }
+
+    },
+
+    "required": [
+
+        "access",
+
+        "refresh"
+
+    ]
+}

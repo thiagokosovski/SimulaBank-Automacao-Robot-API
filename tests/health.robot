@@ -1,20 +1,21 @@
 *** Settings ***
-Library    RequestsLibrary
 
-*** Variables ***
-${BASE_URL}    http://127.0.0.1:8000
+Resource    ../config/package.resource
+
+
 
 *** Test Cases ***
-Validar Health Check da API
 
-    Create Session    simulabank    ${BASE_URL}
+############################################################
+# Teste:
+# Validar se a API está online.
+############################################################
 
-    ${response}=    GET On Session
-    ...    simulabank
-    ...    /api/health/
+Validar Health Check
 
-    Status Should Be    200    ${response}
 
-    Should Be Equal As Strings
-    ...    ${response.json()["status"]}
-    ...    online
+    ################################################
+    # Executa validação completa do Health
+    ################################################
+
+    Validar Health API

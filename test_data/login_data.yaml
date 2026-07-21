@@ -1,0 +1,27 @@
+login_tests:
+
+  - nome: senha invalida
+
+    username: teste
+
+    password: senha_errada
+
+    esperado_status: 401
+
+
+  - nome: usuario inexistente
+
+    username: usuario_fake
+
+    password: Power747
+
+    esperado_status: 401
+
+
+  - nome: usuario vazio
+
+    username:
+
+    password:
+
+    esperado_status: 400
