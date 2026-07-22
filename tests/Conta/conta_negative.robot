@@ -6,7 +6,13 @@ Resource    ../../config/package.resource
 
 *** Test Cases ***
 
-CT005 - Consultar conta sem autenticacao
+CT-CONTA-002 - GET Conta sem token retorna 401
+
+    [Tags]
+    ...    conta
+    ...    get
+    ...    negativo
+    ...    CT-CONTA-002
 
 
     Criar Sessão da API

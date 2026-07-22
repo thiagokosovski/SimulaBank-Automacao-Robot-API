@@ -25,7 +25,7 @@ Library    JSONLibrary
 # Variáveis globais da API
 ############################################################
 
-Resource    ../../config/api_variables.robot
+Resource    ../../config/package.resource
 
 
 ############################################################
@@ -63,25 +63,25 @@ Resource    auth_keywords.robot
 Consultar Conta
 
     ########################################################
-    # Garante que existe um token válido
+    # Garante um Token JWT válido
     ########################################################
 
     Realizar Login
 
     ########################################################
-    # Cria o Header Authorization
+    # Executa GET autenticado
     ########################################################
 
-    ${headers}=    Criar Header JWT
-
-    ########################################################
-    # Executa a chamada da API
-    ########################################################
-
-    ${response}=    GET On Session
-    ...    simulabank
+    ${response}=    Realizar GET Autenticado
     ...    ${API_PREFIX}${CONTA_ENDPOINT}
-    ...    headers=${headers}
+
+    ########################################################
+    # Retorna resposta da API
+    ########################################################
+
+    RETURN    ${response}
+
+
 
     ########################################################
     # Retorna toda a resposta

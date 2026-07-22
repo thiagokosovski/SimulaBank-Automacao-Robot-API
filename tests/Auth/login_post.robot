@@ -5,7 +5,14 @@ Resource    ../config/package.resource
 
 *** Test Cases ***
 
-Validar Login JWT
+CT-AUTH-001 - POST Login retorna token JWT
+
+    [Tags]
+    ...    auth
+    ...    post
+    ...    positivo
+    ...    smoke
+    ...    CT-AUTH-001
 
     # Executa o login
     Realizar Login

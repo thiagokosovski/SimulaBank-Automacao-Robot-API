@@ -9,7 +9,7 @@ Library    Collections
 
 
 # Importa as variáveis da API
-Resource    ../../config/api_variables.robot
+Resource    ../../config/package.resource
 
 
 # Importa keywords comuns

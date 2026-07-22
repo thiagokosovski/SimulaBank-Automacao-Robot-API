@@ -53,3 +53,15 @@ Validar Campo Não Vazio
     [Arguments]    ${valor}
 
     Should Not Be Empty    ${valor}
+
+############################################################
+# Valida Número Positivo
+############################################################
+
+Validar Número Positivo
+
+    [Arguments]
+    ...    ${valor}
+
+    Should Be True
+    ...    ${valor} > 0    

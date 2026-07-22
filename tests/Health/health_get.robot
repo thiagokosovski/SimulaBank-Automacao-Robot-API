@@ -11,7 +11,14 @@ Resource    ../config/package.resource
 # Validar se a API está online.
 ############################################################
 
-Validar Health Check
+CT-HEALTH-001 - GET Health retorna API online
+
+    [Tags]
+    ...    health
+    ...    get
+    ...    positivo
+    ...    smoke
+    ...    CT-HEALTH-001
 
 
     ################################################

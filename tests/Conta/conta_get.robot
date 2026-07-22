@@ -5,7 +5,14 @@ Resource    ../config/package.resource
 
 *** Test Cases ***
 
-Consultar Conta
+CT-CONTA-001 - GET Conta autenticada retorna 200
+
+    [Tags]
+    ...    conta
+    ...    get
+    ...    positivo
+    ...    smoke
+    ...    CT-CONTA-001
 
     ########################################################
     # Cria sessão HTTP

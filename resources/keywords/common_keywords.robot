@@ -7,7 +7,7 @@ Library    RequestsLibrary
 Library    ../../libraries/env_library.py
 
 # Importa as variáveis da API
-Resource    ../../config/api_variables.robot
+Resource    ../../config/package.resource
 
 # Importa as keywords de autenticação
 Resource    auth_keywords.robot
@@ -38,17 +38,15 @@ Criar Sessão da API
 
 Realizar GET
 
-    [Arguments]    ${endpoint}
+    [Arguments]
+    ...    ${endpoint}
 
     ${response}=    GET On Session
     ...    simulabank
     ...    ${endpoint}
+    ...    expected_status=anything
 
     RETURN    ${response}
-
-
-
-
 
 ############################################################
 # Executa uma requisição POST.
@@ -93,6 +91,7 @@ Realizar PUT
     ...    simulabank
     ...    ${endpoint}
     ...    json=${body}
+    ...    expected_status=anything
 
     RETURN    ${response}
 
@@ -109,7 +108,8 @@ Realizar PATCH
     ...    simulabank
     ...    ${endpoint}
     ...    json=${body}
-
+    ...    expected_status=anything 
+     
     RETURN    ${response}
 
 
@@ -124,7 +124,8 @@ Realizar DELETE
     ${response}=    DELETE On Session
     ...    simulabank
     ...    ${endpoint}
-
+    ...    expected_status=anything
+     
     RETURN    ${response}
 
 

@@ -5,7 +5,13 @@ Resource    ../../config/package.resource
 
 *** Test Cases ***
 
-CT004 - Login Negativo (Data Driven)
+CT-AUTH-002 - POST Login inválido retorna erro
+
+    [Tags]
+    ...    auth
+    ...    post
+    ...    negativo
+    ...    CT-AUTH-002
 
     ########################################################
     # Cria Sessão HTTP

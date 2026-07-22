@@ -18,7 +18,7 @@ Library    ../../libraries/env_library.py
 ############################################################
 # Variáveis globais da API
 ############################################################
-Resource    ../../config/api_variables.robot
+Resource    ../../config/package.resource
 
 ############################################################
 # Keywords compartilhadas

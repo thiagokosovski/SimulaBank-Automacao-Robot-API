@@ -11,7 +11,7 @@ Library    RequestsLibrary
 # Variáveis da API
 ############################################################
 
-Resource    ../../config/api_variables.robot
+Resource    ../../config/package.resource
 
 
 ############################################################
