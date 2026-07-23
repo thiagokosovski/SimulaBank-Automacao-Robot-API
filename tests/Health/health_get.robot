@@ -1,6 +1,6 @@
 *** Settings ***
 
-Resource    ../config/package.resource
+Resource    ../../config/package.resource
 
 
 
