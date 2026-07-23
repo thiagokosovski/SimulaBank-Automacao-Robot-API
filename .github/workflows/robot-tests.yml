@@ -172,3 +172,88 @@ jobs:
           name: robot-results
 
           path: results/
+
+
+##################################################
+# Execution Summary
+##################################################
+
+- name: Generate Execution Summary
+
+  if: always()
+
+  run: |
+
+    echo "# 🤖 Robot Framework API Execution" >> $GITHUB_STEP_SUMMARY
+
+    echo "" >> $GITHUB_STEP_SUMMARY
+
+    echo "## Workflow Information" >> $GITHUB_STEP_SUMMARY
+
+    echo "" >> $GITHUB_STEP_SUMMARY
+
+    echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+    echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+
+    echo "| Workflow | $GITHUB_WORKFLOW |" >> $GITHUB_STEP_SUMMARY
+
+    echo "| Repository | $GITHUB_REPOSITORY |" >> $GITHUB_STEP_SUMMARY
+
+    echo "| Branch | $GITHUB_REF_NAME |" >> $GITHUB_STEP_SUMMARY
+
+    echo "| Commit | $GITHUB_SHA |" >> $GITHUB_STEP_SUMMARY
+
+    echo "| Runner | $RUNNER_OS |" >> $GITHUB_STEP_SUMMARY
+
+    echo "| Python | 3.9 |" >> $GITHUB_STEP_SUMMARY
+
+    echo "" >> $GITHUB_STEP_SUMMARY
+
+    echo "## Environment" >> $GITHUB_STEP_SUMMARY
+
+    echo "" >> $GITHUB_STEP_SUMMARY
+
+    echo "| Variable | Status |" >> $GITHUB_STEP_SUMMARY
+
+    echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+
+    if [ -n "$BASE_URL" ]; then
+      echo "| BASE_URL | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
+    else
+      echo "| BASE_URL | ❌ Missing |" >> $GITHUB_STEP_SUMMARY
+    fi
+
+    if [ -n "$API_USERNAME" ]; then
+      echo "| API_USERNAME | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
+    else
+      echo "| API_USERNAME | ❌ Missing |" >> $GITHUB_STEP_SUMMARY
+    fi
+
+    if [ -n "$API_PASSWORD" ]; then
+      echo "| API_PASSWORD | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
+    else
+      echo "| API_PASSWORD | ❌ Missing |" >> $GITHUB_STEP_SUMMARY
+    fi
+
+    echo "" >> $GITHUB_STEP_SUMMARY
+
+    echo "## Generated Reports" >> $GITHUB_STEP_SUMMARY
+
+    echo "" >> $GITHUB_STEP_SUMMARY
+
+    echo "- output.xml" >> $GITHUB_STEP_SUMMARY
+    echo "- log.html" >> $GITHUB_STEP_SUMMARY
+    echo "- report.html" >> $GITHUB_STEP_SUMMARY 
+
+
+##################################################
+# Robot Statistics
+##################################################
+
+- name: Generate Robot Statistics
+
+  if: always()
+
+  run: |
+
+    python scripts/robot_summary.py
