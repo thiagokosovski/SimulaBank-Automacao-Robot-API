@@ -1,6 +1,8 @@
 name: Robot Framework Tests API
 
 on:
+
+  # Execução automática
   push:
     branches:
       - main
@@ -9,38 +11,164 @@ on:
     branches:
       - main
 
+  # Botão manual no GitHub
+  workflow_dispatch:
+
+
 env:
   BASE_URL: ${{ secrets.BASE_URL }}
   API_USERNAME: ${{ secrets.API_USERNAME }}
   API_PASSWORD: ${{ secrets.API_PASSWORD }}
 
+
 jobs:
+
   robot-tests:
+
+    name: Execute Robot Framework Tests
 
     runs-on: ubuntu-latest
 
+
     steps:
 
+
+      ##################################################
+      # Checkout do código
+      ##################################################
+
       - name: Checkout repository
+
         uses: actions/checkout@v4
 
+
+
+      ##################################################
+      # Configuração Python
+      ##################################################
+
       - name: Setup Python
+
         uses: actions/setup-python@v5
+
         with:
+
           python-version: "3.9"
 
-      - name: Install dependencies
+
+
+      ##################################################
+      # Diagnóstico do ambiente
+      ##################################################
+
+      - name: Show environment information
+
         run: |
+
+          echo "================================"
+          echo "Python version"
+          echo "================================"
+
+          python --version
+
+
+          echo ""
+          echo "================================"
+          echo "Repository files"
+          echo "================================"
+
+          ls -la
+
+
+          echo ""
+          echo "================================"
+          echo "Tests directory"
+          echo "================================"
+
+          ls -la tests || true
+
+
+
+      ##################################################
+      # Instala dependências
+      ##################################################
+
+      - name: Install dependencies
+
+        run: |
+
+          echo "Installing dependencies..."
+
           python -m pip install --upgrade pip
+
           pip install -r requirements.txt
 
-      - name: Execute Robot Tests
+
+
+      ##################################################
+      # Validar variáveis
+      ##################################################
+
+      - name: Validate environment variables
+
         run: |
-          robot --outputdir results tests
+
+          echo "Checking environment variables..."
+
+          if [ -z "$BASE_URL" ]; then
+
+            echo "ERROR: BASE_URL is empty"
+
+            exit 1
+
+          fi
+
+
+          if [ -z "$API_USERNAME" ]; then
+
+            echo "ERROR: API_USERNAME is empty"
+
+            exit 1
+
+          fi
+
+
+          echo "BASE_URL configured"
+
+          echo "API_USERNAME configured"
+
+
+
+      ##################################################
+      # Executa Robot
+      ##################################################
+
+      - name: Execute Robot Tests
+
+        run: |
+
+          mkdir -p results
+
+
+          robot \
+          --outputdir results \
+          --loglevel DEBUG \
+          tests
+
+
+
+      ##################################################
+      # Publica relatório
+      ##################################################
 
       - name: Upload Robot Reports
+
         if: always()
+
         uses: actions/upload-artifact@v4
+
         with:
+
           name: robot-results
+
           path: results/
