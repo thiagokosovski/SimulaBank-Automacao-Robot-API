@@ -5,7 +5,7 @@ load_dotenv()
 
 
 def get_base_url():
-    return os.getenv("API_BASE_URL")
+    return os.getenv("BASE_URL")
 
 
 def get_username():
