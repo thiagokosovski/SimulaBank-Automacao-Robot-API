@@ -5,20 +5,31 @@ Lê o arquivo output.xml do Robot Framework e publica
 um resumo da execução na aba Summary do GitHub Actions.
 """
 
+############################################################
+# Imports
+############################################################
+
 from pathlib import Path
 from xml.etree import ElementTree as ET
 import os
 import platform
 import sys
 
+############################################################
+# Constantes
+############################################################
 
 OUTPUT_FILE = Path("results/output.xml")
+REPORTS_DIR = Path("results")
 SUMMARY_FILE = os.environ.get("GITHUB_STEP_SUMMARY")
 
+############################################################
+# Carrega o output.xml
+############################################################
 
 def load_robot_output():
     """
-    Carrega o output.xml do Robot Framework.
+    Carrega o arquivo output.xml do Robot Framework.
     """
 
     if not OUTPUT_FILE.exists():
@@ -29,9 +40,13 @@ def load_robot_output():
     return ET.parse(OUTPUT_FILE).getroot()
 
 
+############################################################
+# Extrai as estatísticas
+############################################################
+
 def get_statistics(root):
     """
-    Extrai estatísticas da execução.
+    Obtém estatísticas da execução do Robot Framework.
     """
 
     statistics = root.find("statistics")
@@ -46,11 +61,18 @@ def get_statistics(root):
 
     passed = int(total_node.attrib.get("pass", 0))
     failed = int(total_node.attrib.get("fail", 0))
-
     total = passed + failed
 
     success_rate = (
-        (passed / total) * 100 if total > 0 else 0
+        (passed / total) * 100
+        if total > 0
+        else 0
+    )
+
+    result = (
+        "✅ SUCCESS"
+        if failed == 0
+        else "❌ FAILURE"
     )
 
     return {
@@ -58,8 +80,13 @@ def get_statistics(root):
         "passed": passed,
         "failed": failed,
         "success_rate": success_rate,
+        "result": result,
     }
 
+
+############################################################
+# Escreve uma tabela Markdown
+############################################################
 
 def write_table(file, data):
     """
@@ -72,71 +99,126 @@ def write_table(file, data):
     for key, value in data.items():
         file.write(f"| {key} | {value} |\n")
 
+    file.write("\n")
+
+
+############################################################
+# Resumo da execução
+############################################################
+
+def write_execution_summary(file, stats):
+    """
+    Escreve o resumo da execução.
+    """
+
+    file.write("## 📊 Test Execution Summary\n\n")
+
+    write_table(
+        file,
+        {
+            "Total Tests": stats["total"],
+            "Passed": f"✅ {stats['passed']}",
+            "Failed": f"❌ {stats['failed']}",
+            "Success Rate": f"{stats['success_rate']:.2f}%",
+            "Final Result": stats["result"],
+        },
+    )
+
+
+############################################################
+# Informações do ambiente
+############################################################
+
+def write_runtime(file):
+    """
+    Escreve informações do ambiente de execução.
+    """
+
+    file.write("## 🖥 Runtime\n\n")
+
+    write_table(
+        file,
+        {
+            "Python": platform.python_version(),
+            "Platform": platform.system(),
+            "Architecture": platform.machine(),
+        },
+    )
+
+
+############################################################
+# Relatórios gerados
+############################################################
+
+def write_reports(file):
+    """
+    Lista os relatórios gerados pelo Robot Framework.
+    """
+
+    file.write("## 📂 Robot Reports\n\n")
+
+    reports = [
+        "output.xml",
+        "log.html",
+        "report.html",
+    ]
+
+    for report in reports:
+
+        report_path = REPORTS_DIR / report
+
+        if report_path.exists():
+            file.write(f"- ✅ {report}\n")
+        else:
+            file.write(f"- ❌ {report}\n")
+
+    file.write("\n")
+
+
+############################################################
+# Rodapé
+############################################################
+
+def write_footer(file):
+    """
+    Escreve o rodapé do Summary.
+    """
+
+    file.write("---\n\n")
+    file.write("Job summary generated automatically by Robot Framework.\n")
+
+
+############################################################
+# Gera o Summary
+############################################################
 
 def write_summary(stats):
     """
-    Escreve o resumo para o GitHub Actions.
+    Escreve o resumo completo para o GitHub Actions.
     """
 
     if SUMMARY_FILE is None:
         print("GITHUB_STEP_SUMMARY não encontrado.")
         return
 
-    status = (
-        "✅ SUCCESS"
-        if stats["failed"] == 0
-        else "❌ FAILURE"
-    )
-
     with open(SUMMARY_FILE, "a", encoding="utf-8") as summary:
 
         summary.write("\n")
 
-        summary.write("# 📊 Robot Framework Statistics\n\n")
+        summary.write("# 🤖 Robot Framework API Execution\n\n")
 
-        write_table(
-            summary,
-            {
-                "Total Tests": stats["total"],
-                "Passed": f"✅ {stats['passed']}",
-                "Failed": f"❌ {stats['failed']}",
-                "Success Rate": f"{stats['success_rate']:.2f}%",
-                "Result": status,
-            },
-        )
+        write_execution_summary(summary, stats)
 
-        summary.write("\n")
+        write_runtime(summary)
 
-        summary.write("## 🖥 Runtime\n\n")
+        write_reports(summary)
 
-        write_table(
-            summary,
-            {
-                "Python": platform.python_version(),
-                "Platform": platform.system(),
-                "Architecture": platform.machine(),
-            },
-        )
+        write_footer(summary)
 
-        summary.write("\n")
 
-        summary.write("## 📂 Reports\n\n")
-
-        reports = [
-            "output.xml",
-            "report.html",
-            "log.html",
-        ]
-
-        for report in reports:
-
-            report_path = Path("results") / report
-
-            if report_path.exists():
-                summary.write(f"- ✅ {report}\n")
-            else:
-                summary.write(f"- ❌ {report}\n")
-
+############################################################
+# Main
+############################################################
 
 def main():
 
@@ -160,6 +242,10 @@ def main():
 
         sys.exit(1)
 
+
+############################################################
+# Ponto de entrada
+############################################################
 
 if __name__ == "__main__":
     main()
