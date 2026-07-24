@@ -1,48 +1,165 @@
-from xml.etree import ElementTree as ET
+"""
+Robot Framework Summary Generator
+
+Lê o arquivo output.xml do Robot Framework e publica
+um resumo da execução na aba Summary do GitHub Actions.
+"""
+
 from pathlib import Path
+from xml.etree import ElementTree as ET
 import os
+import platform
+import sys
 
-output_file = Path("results/output.xml")
 
-summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
+OUTPUT_FILE = Path("results/output.xml")
+SUMMARY_FILE = os.environ.get("GITHUB_STEP_SUMMARY")
 
-if not output_file.exists():
-    print("Arquivo output.xml não encontrado.")
-    exit(0)
 
-tree = ET.parse(output_file)
-root = tree.getroot()
+def load_robot_output():
+    """
+    Carrega o output.xml do Robot Framework.
+    """
 
-statistics = root.find("statistics")
+    if not OUTPUT_FILE.exists():
+        raise FileNotFoundError(
+            f"Arquivo não encontrado: {OUTPUT_FILE}"
+        )
 
-total = 0
-passed = 0
-failed = 0
+    return ET.parse(OUTPUT_FILE).getroot()
 
-if statistics is not None:
+
+def get_statistics(root):
+    """
+    Extrai estatísticas da execução.
+    """
+
+    statistics = root.find("statistics")
+
+    if statistics is None:
+        return None
+
     total_node = statistics.find("./total/stat")
 
-    if total_node is not None:
-        passed = int(total_node.attrib.get("pass", 0))
-        failed = int(total_node.attrib.get("fail", 0))
-        total = passed + failed
+    if total_node is None:
+        return None
 
-with open(summary_file, "a", encoding="utf-8") as f:
+    passed = int(total_node.attrib.get("pass", 0))
+    failed = int(total_node.attrib.get("fail", 0))
 
-    f.write("\n")
+    total = passed + failed
 
-    f.write("## 📊 Test Statistics\n\n")
+    success_rate = (
+        (passed / total) * 100 if total > 0 else 0
+    )
 
-    f.write("| Item | Value |\n")
-    f.write("|------|-------|\n")
+    return {
+        "total": total,
+        "passed": passed,
+        "failed": failed,
+        "success_rate": success_rate,
+    }
 
-    f.write(f"| Total Tests | {total} |\n")
-    f.write(f"| Passed | ✅ {passed} |\n")
-    f.write(f"| Failed | ❌ {failed} |\n")
 
-    if failed == 0:
-        status = "✅ SUCCESS"
-    else:
-        status = "❌ FAILURE"
+def write_table(file, data):
+    """
+    Escreve uma tabela Markdown.
+    """
 
-    f.write(f"| Result | {status} |\n")
+    file.write("| Item | Value |\n")
+    file.write("|------|-------|\n")
+
+    for key, value in data.items():
+        file.write(f"| {key} | {value} |\n")
+
+
+def write_summary(stats):
+    """
+    Escreve o resumo para o GitHub Actions.
+    """
+
+    if SUMMARY_FILE is None:
+        print("GITHUB_STEP_SUMMARY não encontrado.")
+        return
+
+    status = (
+        "✅ SUCCESS"
+        if stats["failed"] == 0
+        else "❌ FAILURE"
+    )
+
+    with open(SUMMARY_FILE, "a", encoding="utf-8") as summary:
+
+        summary.write("\n")
+
+        summary.write("# 📊 Robot Framework Statistics\n\n")
+
+        write_table(
+            summary,
+            {
+                "Total Tests": stats["total"],
+                "Passed": f"✅ {stats['passed']}",
+                "Failed": f"❌ {stats['failed']}",
+                "Success Rate": f"{stats['success_rate']:.2f}%",
+                "Result": status,
+            },
+        )
+
+        summary.write("\n")
+
+        summary.write("## 🖥 Runtime\n\n")
+
+        write_table(
+            summary,
+            {
+                "Python": platform.python_version(),
+                "Platform": platform.system(),
+                "Architecture": platform.machine(),
+            },
+        )
+
+        summary.write("\n")
+
+        summary.write("## 📂 Reports\n\n")
+
+        reports = [
+            "output.xml",
+            "report.html",
+            "log.html",
+        ]
+
+        for report in reports:
+
+            report_path = Path("results") / report
+
+            if report_path.exists():
+                summary.write(f"- ✅ {report}\n")
+            else:
+                summary.write(f"- ❌ {report}\n")
+
+
+def main():
+
+    try:
+
+        root = load_robot_output()
+
+        stats = get_statistics(root)
+
+        if stats is None:
+            print("Não foi possível obter estatísticas.")
+            sys.exit(1)
+
+        write_summary(stats)
+
+        print("Resumo gerado com sucesso.")
+
+    except Exception as error:
+
+        print(error)
+
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
