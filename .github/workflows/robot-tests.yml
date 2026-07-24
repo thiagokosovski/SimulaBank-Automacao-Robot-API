@@ -1,119 +1,115 @@
 name: Robot Framework Tests API
 
-##################################################
-# Eventos
-##################################################
 
 on:
 
-  # Execução automática após push
   push:
     branches:
       - main
 
-  # Execução automática em Pull Request
+
   pull_request:
     branches:
       - main
 
-  # Execução manual
+
   workflow_dispatch:
 
 
-##################################################
-# Variáveis de Ambiente
-##################################################
 
 env:
+
   BASE_URL: ${{ secrets.BASE_URL }}
   API_USERNAME: ${{ secrets.API_USERNAME }}
   API_PASSWORD: ${{ secrets.API_PASSWORD }}
 
 
-##################################################
-# Jobs
-##################################################
+
 
 jobs:
 
+
   robot-tests:
+
 
     name: Execute Robot Framework Tests
 
+
     runs-on: ubuntu-latest
+
+
 
     steps:
 
-      ##################################################
-      # Checkout do repositório
-      ##################################################
+
 
       - name: Checkout repository
+
         uses: actions/checkout@v4
 
 
-      ##################################################
-      # Configuração do Python
-      ##################################################
+
 
       - name: Setup Python
+
         uses: actions/setup-python@v5
 
         with:
+
           python-version: "3.9"
 
 
-      ##################################################
-      # Informações do ambiente (diagnóstico)
-      ##################################################
+
 
       - name: Show environment information
 
         run: |
 
           echo "====================================="
-          echo "Python Version"
+
+          echo "Python version"
+
           echo "====================================="
+
           python --version
 
-          echo ""
-
-          echo "====================================="
-          echo "Operating System"
-          echo "====================================="
-          uname -a
 
           echo ""
 
           echo "====================================="
-          echo "Repository Files"
+
+          echo "Repository files"
+
           echo "====================================="
+
           ls -la
 
+
           echo ""
 
           echo "====================================="
-          echo "Tests Directory"
+
+          echo "Tests directory"
+
           echo "====================================="
+
           ls -la tests || true
 
 
-      ##################################################
-      # Instalação das dependências
-      ##################################################
+
 
       - name: Install dependencies
 
         run: |
+
+          echo "Installing dependencies..."
 
           python -m pip install --upgrade pip
 
           pip install -r requirements.txt
 
 
-      ##################################################
-      # Validação das variáveis de ambiente
-      ##################################################
+
 
       - name: Validate environment variables
 
@@ -121,29 +117,33 @@ jobs:
 
           echo "Checking environment variables..."
 
+
           if [ -z "$BASE_URL" ]; then
             echo "ERROR: BASE_URL is empty"
             exit 1
           fi
+
 
           if [ -z "$API_USERNAME" ]; then
             echo "ERROR: API_USERNAME is empty"
             exit 1
           fi
 
+
           if [ -z "$API_PASSWORD" ]; then
             echo "ERROR: API_PASSWORD is empty"
             exit 1
           fi
 
+
           echo "BASE_URL configured"
+
           echo "API_USERNAME configured"
+
           echo "API_PASSWORD configured"
 
 
-      ##################################################
-      # Execução dos testes Robot Framework
-      ##################################################
+
 
       - name: Execute Robot Tests
 
@@ -151,36 +151,168 @@ jobs:
 
           mkdir -p results
 
+
           robot \
             --outputdir results \
             --loglevel DEBUG \
             tests
 
 
-      ##################################################
-      # Geração do Dashboard
-      #
-      # Toda a geração do Summary acontece
-      # dentro do arquivo:
-      #
-      # scripts/robot_summary.py
-      ##################################################
 
-      - name: Generate Robot Dashboard
+
+      - name: Generate Execution Summary
 
         if: always()
 
         run: |
 
-          python scripts/robot_summary.py
+          echo "# 🤖 Robot Framework API Execution" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
 
 
-      ##################################################
-      # Publicação dos artefatos
-      #
-      # Estes arquivos poderão ser baixados
-      # diretamente pelo GitHub.
-      ##################################################
+
+          echo "## Workflow Information" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Workflow | $GITHUB_WORKFLOW |" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Repository | $GITHUB_REPOSITORY |" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Branch | $GITHUB_REF_NAME |" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Commit | $(echo $GITHUB_SHA | cut -c1-7) |" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Runner | $RUNNER_OS |" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Python | $(python --version) |" >> $GITHUB_STEP_SUMMARY
+
+
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "## Environment Variables" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "| Variable | Status |" >> $GITHUB_STEP_SUMMARY
+
+          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "| BASE_URL | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
+
+          echo "| API_USERNAME | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
+
+          echo "| API_PASSWORD | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
+
+
+
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "## 📊 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+
+
+
+          if [ -f results/output.xml ]; then
+
+            TOTAL=$(grep -o '<test ' results/output.xml | wc -l)
+
+            PASSED=$(grep -o 'status="PASS"' results/output.xml | wc -l)
+
+            FAILED=$(grep -o 'status="FAIL"' results/output.xml | wc -l)
+
+
+            if [ "$TOTAL" -gt 0 ]; then
+
+              SUCCESS=$(awk "BEGIN {printf \"%.2f\", ($PASSED/$TOTAL)*100}")
+
+            else
+
+              SUCCESS="0.00"
+
+            fi
+
+
+            echo "| Total Tests | $TOTAL |" >> $GITHUB_STEP_SUMMARY
+
+            echo "| Passed | ✅ $PASSED |" >> $GITHUB_STEP_SUMMARY
+
+            echo "| Failed | ❌ $FAILED |" >> $GITHUB_STEP_SUMMARY
+
+            echo "| Success Rate | $SUCCESS% |" >> $GITHUB_STEP_SUMMARY
+
+
+          else
+
+            echo "| Total Tests | N/A |" >> $GITHUB_STEP_SUMMARY
+
+            echo "| Passed | N/A |" >> $GITHUB_STEP_SUMMARY
+
+            echo "| Failed | N/A |" >> $GITHUB_STEP_SUMMARY
+
+            echo "| Success Rate | N/A |" >> $GITHUB_STEP_SUMMARY
+
+          fi
+
+
+
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "## 🖥 Runtime" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "| Python | $(python --version) |" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Platform | $(uname -s) |" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Architecture | $(uname -m) |" >> $GITHUB_STEP_SUMMARY
+
+
+
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "## 📂 Robot Reports" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+
+          echo "✅ output.xml" >> $GITHUB_STEP_SUMMARY
+
+          echo "✅ log.html" >> $GITHUB_STEP_SUMMARY
+
+          echo "✅ report.html" >> $GITHUB_STEP_SUMMARY
+
+
+
 
       - name: Upload Robot Reports
 
