@@ -230,14 +230,58 @@ jobs:
           echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
 
 
+                    if [ -f results/output.xml ]; then
 
-          if [ -f results/output.xml ]; then
 
-            TOTAL=$(grep -o '<test ' results/output.xml | wc -l)
+                      TOTAL=$(python - <<'PY'
+          import xml.etree.ElementTree as ET
 
-            PASSED=$(grep -o 'status="PASS"' results/output.xml | wc -l)
+          tree = ET.parse("results/output.xml")
+          root = tree.getroot()
 
-            FAILED=$(grep -o 'status="FAIL"' results/output.xml | wc -l)
+          print(len(root.findall(".//test")))
+          PY
+                      )
+
+
+                      PASSED=$(python - <<'PY'
+          import xml.etree.ElementTree as ET
+
+          tree = ET.parse("results/output.xml")
+          root = tree.getroot()
+
+          count = 0
+
+          for test in root.findall(".//test"):
+
+              status = test.find("status")
+
+              if status is not None and status.attrib.get("status") == "PASS":
+                  count += 1
+
+          print(count)
+          PY
+          )
+
+
+                      FAILED=$(python - <<'PY'
+          import xml.etree.ElementTree as ET
+
+          tree = ET.parse("results/output.xml")
+          root = tree.getroot()
+
+          count = 0
+
+          for test in root.findall(".//test"):
+
+              status = test.find("status")
+
+              if status is not None and status.attrib.get("status") == "FAIL":
+                  count += 1
+
+          print(count)
+          PY
+          )
 
 
             if [ "$TOTAL" -gt 0 ]; then
@@ -250,59 +294,18 @@ jobs:
 
             fi
 
-            TOTAL=$(python - <<'PY'
-            import xml.etree.ElementTree as ET
 
-            tree = ET.parse("results/output.xml")
-            root = tree.getroot()
+            echo "| Total Tests | $TOTAL |" >> $GITHUB_STEP_SUMMARY
 
-            print(len(root.findall(".//test")))
-            PY
-                        )
+            echo "| Passed | ✅ $PASSED |" >> $GITHUB_STEP_SUMMARY
 
-
-                        PASSED=$(python - <<'PY'
-            import xml.etree.ElementTree as ET
-
-            tree = ET.parse("results/output.xml")
-            root = tree.getroot()
-
-            count = 0
-
-            for test in root.findall(".//test"):
-                status = test.find("status")
-
-                if status is not None and status.attrib.get("status") == "PASS":
-                    count += 1
-
-            print(count)
-            PY
-                        )
-
-
-                        FAILED=$(python - <<'PY'
-            import xml.etree.ElementTree as ET
-
-            tree = ET.parse("results/output.xml")
-            root = tree.getroot()
-
-            count = 0
-
-            for test in root.findall(".//test"):
-                status = test.find("status")
-
-                if status is not None and status.attrib.get("status") == "FAIL":
-                    count += 1
-
-            print(count)
-            PY
-                        )
-
+            echo "| Failed | ❌ $FAILED |" >> $GITHUB_STEP_SUMMARY
 
             echo "| Success Rate | $SUCCESS% |" >> $GITHUB_STEP_SUMMARY
 
 
           else
+
 
             echo "| Total Tests | N/A |" >> $GITHUB_STEP_SUMMARY
 
@@ -312,9 +315,8 @@ jobs:
 
             echo "| Success Rate | N/A |" >> $GITHUB_STEP_SUMMARY
 
+
           fi
-
-
 
 
           echo "" >> $GITHUB_STEP_SUMMARY
