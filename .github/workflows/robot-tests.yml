@@ -45,63 +45,78 @@ jobs:
     steps:
 
       ##################################################
-      # Checkout
+      # Checkout do repositório
       ##################################################
 
       - name: Checkout repository
         uses: actions/checkout@v4
 
+
       ##################################################
-      # Python
+      # Configuração do Python
       ##################################################
 
       - name: Setup Python
         uses: actions/setup-python@v5
+
         with:
           python-version: "3.9"
 
+
       ##################################################
-      # Informações do Ambiente
+      # Informações do ambiente (diagnóstico)
       ##################################################
 
       - name: Show environment information
+
         run: |
 
           echo "====================================="
-          echo "Python version"
+          echo "Python Version"
           echo "====================================="
           python --version
 
           echo ""
+
           echo "====================================="
-          echo "Repository files"
+          echo "Operating System"
+          echo "====================================="
+          uname -a
+
+          echo ""
+
+          echo "====================================="
+          echo "Repository Files"
           echo "====================================="
           ls -la
 
           echo ""
+
           echo "====================================="
-          echo "Tests directory"
+          echo "Tests Directory"
           echo "====================================="
           ls -la tests || true
 
+
       ##################################################
-      # Instalar Dependências
+      # Instalação das dependências
       ##################################################
 
       - name: Install dependencies
-        run: |
 
-          echo "Installing dependencies..."
+        run: |
 
           python -m pip install --upgrade pip
 
           pip install -r requirements.txt
 
+
       ##################################################
-      # Validar Variáveis
+      # Validação das variáveis de ambiente
       ##################################################
 
       - name: Validate environment variables
+
         run: |
 
           echo "Checking environment variables..."
@@ -125,11 +140,13 @@ jobs:
           echo "API_USERNAME configured"
           echo "API_PASSWORD configured"
 
+
       ##################################################
-      # Executar Robot Framework
+      # Execução dos testes Robot Framework
       ##################################################
 
       - name: Execute Robot Tests
+
         run: |
 
           mkdir -p results
@@ -139,89 +156,40 @@ jobs:
             --loglevel DEBUG \
             tests
 
+
       ##################################################
-      # Summary da Execução
+      # Geração do Dashboard
+      #
+      # Toda a geração do Summary acontece
+      # dentro do arquivo:
+      #
+      # scripts/robot_summary.py
       ##################################################
 
-      - name: Generate Execution Summary
+      - name: Generate Robot Dashboard
+
         if: always()
+
         run: |
 
-          echo "# 🤖 Robot Framework API Execution" >> $GITHUB_STEP_SUMMARY
+          python scripts/robot_summary.py
 
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "## Workflow Information" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Workflow | $GITHUB_WORKFLOW |" >> $GITHUB_STEP_SUMMARY
-          echo "| Repository | $GITHUB_REPOSITORY |" >> $GITHUB_STEP_SUMMARY
-          echo "| Branch | $GITHUB_REF_NAME |" >> $GITHUB_STEP_SUMMARY
-          echo "| Commit | ${GITHUB_SHA::7} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Runner | $RUNNER_OS |" >> $GITHUB_STEP_SUMMARY
-          echo "| Python | 3.9 |" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "## Environment Variables" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Variable | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
-
-          if [ -n "$BASE_URL" ]; then
-            echo "| BASE_URL | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "| BASE_URL | ❌ Missing |" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          if [ -n "$API_USERNAME" ]; then
-            echo "| API_USERNAME | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "| API_USERNAME | ❌ Missing |" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          if [ -n "$API_PASSWORD" ]; then
-            echo "| API_PASSWORD | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "| API_PASSWORD | ❌ Missing |" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "## Robot Reports" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ -f results/output.xml ]; then
-            echo "- ✅ output.xml" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "- ❌ output.xml" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          if [ -f results/log.html ]; then
-            echo "- ✅ log.html" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "- ❌ log.html" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          if [ -f results/report.html ]; then
-            echo "- ✅ report.html" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "- ❌ report.html" >> $GITHUB_STEP_SUMMARY
-          fi
 
       ##################################################
-      # Upload dos Relatórios
+      # Publicação dos artefatos
+      #
+      # Estes arquivos poderão ser baixados
+      # diretamente pelo GitHub.
       ##################################################
 
       - name: Upload Robot Reports
+
         if: always()
+
         uses: actions/upload-artifact@v4
+
         with:
+
           name: robot-results
+
           path: results/
