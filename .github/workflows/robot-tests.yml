@@ -151,6 +151,8 @@ jobs:
 
         run: |
 
+          rm -rf results
+
           python tools/run_robot.py
 
 
@@ -161,7 +163,14 @@ jobs:
 
         run: |
 
-          SUMMARY=$(find results -name summary.md | head -1)
+          echo "Searching latest summary.md"
+
+
+          SUMMARY=$(find results -name summary.md | sort | tail -1)
+
+
+          echo "Summary found:"
+          echo "$SUMMARY"
 
 
           if [ -f "$SUMMARY" ]; then
@@ -170,9 +179,12 @@ jobs:
 
             cat "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
+
           else
 
             echo "summary.md not found"
+
+            exit 1
 
           fi
 
