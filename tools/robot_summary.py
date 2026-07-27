@@ -169,40 +169,32 @@ class RobotSummary:
 
     def generate_markdown(self):
 
-        generated_at = datetime.now().strftime(
-            "%d/%m/%Y %H:%M:%S"
-        )
-
         markdown = f"""# 🤖 Robot Framework API Execution
 
-    {self.generate_environment_info()}  
 
-    ## 📁 Execution Information
+{self.generate_environment_info()}
 
-    | Item | Value |
-    |------|-------|
-    | Execution Folder | {self.results_dir} |
-    | Generated At | {generated_at} |
 
-    ---
+## 📊 Test Execution Summary
 
-    ## 📊 Test Execution Summary
 
-    | Item | Value |
-    |------|-------|
-    | Suites | {self.suites} |
-    | Total Tests | {self.total} |
-    | Passed | ✅ {self.passed} |
-    | Failed | ❌ {self.failed} |
-    | Success Rate | {self.success_rate}% |
+| Item | Value |
+|------|-------|
+| Suites | {self.suites} |
+| Total Tests | {self.total} |
+| Passed | ✅ {self.passed} |
+| Failed | ❌ {self.failed} |
+| Success Rate | {self.success_rate}% |
 
-    ---
 
-    ## ✅ Executed Test Cases
 
-    | Status | Test Case |
-    |--------|-----------|
-    """
+## ✅ Executed Test Cases
+
+
+| Status | Test Case |
+|--------|-----------|
+"""
+
 
         for status, test_name in self.executed_tests:
 
@@ -211,6 +203,23 @@ class RobotSummary:
             markdown += (
                 f"| {icon} {status} | {test_name} |\n"
             )
+
+
+        markdown += """
+
+
+
+## 📂 Robot Reports
+
+
+✅ output.xml
+
+✅ log.html
+
+✅ report.html
+
+"""
+
 
         return markdown
 
