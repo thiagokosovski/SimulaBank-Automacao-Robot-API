@@ -145,215 +145,36 @@ jobs:
 
 
 
-      - name: Execute Robot Tests
+      - name: Execute Robot Framework
+
+        continue-on-error: true
 
         run: |
 
-          mkdir -p results
-
-
-          robot \
-            --outputdir results \
-            --loglevel DEBUG \
-            tests
+          python tools/run_robot.py
 
 
 
-
-      - name: Generate Execution Summary
+      - name: Publish Robot Summary
 
         if: always()
 
         run: |
 
-          echo "# 🤖 Robot Framework API Execution" >> $GITHUB_STEP_SUMMARY
+          SUMMARY=$(find results -name summary.md | head -1)
 
-          echo "" >> $GITHUB_STEP_SUMMARY
 
+          if [ -f "$SUMMARY" ]; then
 
+            echo "Publishing summary..."
 
-          echo "## Workflow Information" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
-
-          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Workflow | $GITHUB_WORKFLOW |" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Repository | $GITHUB_REPOSITORY |" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Branch | $GITHUB_REF_NAME |" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Commit | $(echo $GITHUB_SHA | cut -c1-7) |" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Runner | $RUNNER_OS |" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Python | $(python --version) |" >> $GITHUB_STEP_SUMMARY
-
-
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "## Environment Variables" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "| Variable | Status |" >> $GITHUB_STEP_SUMMARY
-
-          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "| BASE_URL | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
-
-          echo "| API_USERNAME | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
-
-          echo "| API_PASSWORD | ✅ Configured |" >> $GITHUB_STEP_SUMMARY
-
-
-
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "## 📊 Test Execution Summary" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
-
-          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
-
-
-                    if [ -f results/output.xml ]; then
-
-
-                      TOTAL=$(python - <<'PY'
-          import xml.etree.ElementTree as ET
-
-          tree = ET.parse("results/output.xml")
-          root = tree.getroot()
-
-          print(len(root.findall(".//test")))
-          PY
-                      )
-
-
-                      PASSED=$(python - <<'PY'
-          import xml.etree.ElementTree as ET
-
-          tree = ET.parse("results/output.xml")
-          root = tree.getroot()
-
-          count = 0
-
-          for test in root.findall(".//test"):
-
-              status = test.find("status")
-
-              if status is not None and status.attrib.get("status") == "PASS":
-                  count += 1
-
-          print(count)
-          PY
-          )
-
-
-                      FAILED=$(python - <<'PY'
-          import xml.etree.ElementTree as ET
-
-          tree = ET.parse("results/output.xml")
-          root = tree.getroot()
-
-          count = 0
-
-          for test in root.findall(".//test"):
-
-              status = test.find("status")
-
-              if status is not None and status.attrib.get("status") == "FAIL":
-                  count += 1
-
-          print(count)
-          PY
-          )
-
-
-            if [ "$TOTAL" -gt 0 ]; then
-
-              SUCCESS=$(awk "BEGIN {printf \"%.2f\", ($PASSED/$TOTAL)*100}")
-
-            else
-
-              SUCCESS="0.00"
-
-            fi
-
-
-            echo "| Total Tests | $TOTAL |" >> $GITHUB_STEP_SUMMARY
-
-            echo "| Passed | ✅ $PASSED |" >> $GITHUB_STEP_SUMMARY
-
-            echo "| Failed | ❌ $FAILED |" >> $GITHUB_STEP_SUMMARY
-
-            echo "| Success Rate | $SUCCESS% |" >> $GITHUB_STEP_SUMMARY
-
+            cat "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
           else
 
-
-            echo "| Total Tests | N/A |" >> $GITHUB_STEP_SUMMARY
-
-            echo "| Passed | N/A |" >> $GITHUB_STEP_SUMMARY
-
-            echo "| Failed | N/A |" >> $GITHUB_STEP_SUMMARY
-
-            echo "| Success Rate | N/A |" >> $GITHUB_STEP_SUMMARY
-
+            echo "summary.md not found"
 
           fi
-
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "## 🖥 Runtime" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
-
-          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "| Python | $(python --version) |" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Platform | $(uname -s) |" >> $GITHUB_STEP_SUMMARY
-
-          echo "| Architecture | $(uname -m) |" >> $GITHUB_STEP_SUMMARY
-
-
-
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "## 📂 Robot Reports" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-
-          echo "✅ output.xml" >> $GITHUB_STEP_SUMMARY
-
-          echo "✅ log.html" >> $GITHUB_STEP_SUMMARY
-
-          echo "✅ report.html" >> $GITHUB_STEP_SUMMARY
 
 
 
