@@ -191,22 +191,51 @@ Realizar GET Autenticado
 # POST autenticado
 ############################################################
 
+############################################################
+# POST autenticado
+#
+# Permite validar respostas:
+#
+# 200
+# 201
+# 400
+# 401
+# 403
+#
+############################################################
+
 Realizar POST Autenticado
 
     [Arguments]
     ...    ${endpoint}
     ...    ${body}
 
-    ${headers}=    Criar Header JWT
 
-    ${response}=    POST On Session
+    ${headers}=
+
+    ...    Criar Header JWT
+
+
+
+    ${response}=
+
+    ...    POST On Session
+
     ...    simulabank
+
     ...    ${endpoint}
+
     ...    json=${body}
+
     ...    headers=${headers}
 
-    RETURN    ${response}
+    ...    expected_status=anything
 
+
+
+    RETURN
+
+    ...    ${response}
 
 ############################################################
 # PUT autenticado
@@ -277,3 +306,52 @@ Realizar DELETE Autenticado
 # - Valor monetário
 #
 ############################################################
+
+
+############################################################
+# POST sem autenticação
+############################################################
+
+Realizar POST Sem Autenticacao
+
+    [Arguments]
+    ...    ${endpoint}
+    ...    ${body}
+    ...    ${expected_status}=401
+
+
+    ${response}=    POST On Session
+    ...    simulabank
+    ...    ${endpoint}
+    ...    json=${body}
+    ...    expected_status=${expected_status}
+
+
+    RETURN    ${response}
+
+
+############################################################
+# POST com token inválido
+############################################################
+
+Realizar POST Token Invalido
+
+    [Arguments]
+    ...    ${endpoint}
+    ...    ${body}
+    ...    ${expected_status}=401
+
+
+    ${headers}=    Create Dictionary
+    ...    Authorization=Bearer ${TOKEN_INVALIDO}
+
+
+    ${response}=    POST On Session
+    ...    simulabank
+    ...    ${endpoint}
+    ...    json=${body}
+    ...    headers=${headers}
+    ...    expected_status=${expected_status}
+
+
+    RETURN    ${response}

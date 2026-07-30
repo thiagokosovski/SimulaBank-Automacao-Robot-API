@@ -152,3 +152,52 @@ Validar Extrato Retornado
     ...    DEPOSITO
     ...    SAQUE
     ...    PIX
+    
+    ############################################################
+    # Validar Extrato Sem Movimentações
+    ############################################################
+
+############################################################
+# Validar Extrato Vazio
+#
+# Objetivo:
+#
+# Garantir que o usuário não possui movimentações
+# cadastradas.
+#
+############################################################
+
+############################################################
+# Validar Extrato Vazio
+#
+# Objetivo:
+#
+# Garantir que uma conta recém-criada e sem operações
+# retorne uma lista vazia.
+#
+############################################################
+
+Validar Extrato Vazio
+
+    [Arguments]
+    ...    ${json}
+
+    ########################################################
+    # O retorno deve ser uma lista
+    ########################################################
+
+    Should Be Equal
+    ...    ${json.__class__.__name__}
+    ...    list
+
+    ########################################################
+    # Deve existir zero movimentações
+    ########################################################
+
+    ${quantidade}=
+    ...    Get Length
+    ...    ${json}
+
+    Should Be Equal As Integers
+    ...    ${quantidade}
+    ...    0
