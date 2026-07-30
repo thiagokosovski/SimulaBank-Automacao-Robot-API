@@ -21,6 +21,18 @@ CT-DEP-001 - Realizar Depósito Com Valor Válido
     ...    post
     ...    positivo
     ...    CT-DEP-001
+       
+
+    ########################################################
+    # Cria sessão HTTP com a API
+    ########################################################
+
+    Criar Sessão da API
+
+
+    ########################################################
+    # Executa depósito
+    ########################################################
 
 
     ${response}=    Realizar Depósito

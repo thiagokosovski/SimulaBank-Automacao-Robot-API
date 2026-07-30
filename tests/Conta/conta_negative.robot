@@ -15,7 +15,7 @@ CT-CONTA-002 - GET Conta sem token retorna 401
     ...    CT-CONTA-002
 
 
-    Criar Sessão da API
+    
 
 
     ${response}=    GET On Session

@@ -56,16 +56,7 @@ CT-EXT-001 - GET Extrato autenticado retorna 200
 
 
 
-    ########################################################
-    # Cria sessão HTTP com a API
-    #
-    # A sessão será utilizada pelas keywords HTTP
-    #
-    ########################################################
-
-    Criar Sessão da API
-
-
+    
 
     ########################################################
     # Consulta o endpoint Extrato

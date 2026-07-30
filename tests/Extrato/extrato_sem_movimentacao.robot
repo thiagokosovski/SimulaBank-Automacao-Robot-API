@@ -63,13 +63,7 @@ CT-EXT-002 - GET Extrato usuário sem movimentações
 
 
 
-    ########################################################
-    # Cria sessão HTTP
-    ########################################################
-
-    Criar Sessão da API
-
-
+ 
 
     ########################################################
     # Consulta o extrato utilizando o usuário
