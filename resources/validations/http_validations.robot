@@ -48,12 +48,18 @@ Validar Campo Igual
 # Valida campo preenchido
 ############################################################
 
+
+
 Validar Campo Não Vazio
 
-    [Arguments]    ${valor}
+    [Arguments]
+    ...    ${valor}
 
-    Should Not Be Empty    ${valor}
 
+    Should Not Be Equal
+    ...    ${valor}
+    ...    ${EMPTY}
+    ...    
 ############################################################
 # Valida Número Positivo
 ############################################################

@@ -78,3 +78,9 @@ ${PIX_ENDPOINT}
 
 ${DOCUMENTOS_ENDPOINT}
 ...    /documentos/
+
+############################################################
+# Endpoint - Extrato
+############################################################
+
+${EXTRATO_ENDPOINT}    /api/extrato/

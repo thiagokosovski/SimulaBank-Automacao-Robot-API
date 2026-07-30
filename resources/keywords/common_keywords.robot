@@ -49,6 +49,46 @@ Realizar GET
     RETURN    ${response}
 
 ############################################################
+# GET sem autenticação
+############################################################
+
+Realizar GET Sem Autenticacao
+
+    [Arguments]
+    ...    ${endpoint}
+    ...    ${expected_status}=401
+
+    ${response}=    GET On Session
+    ...    simulabank
+    ...    ${endpoint}
+    ...    expected_status=${expected_status}
+
+    RETURN    ${response}
+
+
+############################################################
+# GET com token inválido
+############################################################
+
+Realizar GET Token Invalido
+
+    [Arguments]
+    ...    ${endpoint}
+    ...    ${expected_status}=401
+
+    ${headers}=    Create Dictionary
+    ...    Authorization=Bearer ${TOKEN_INVALIDO}
+
+    ${response}=    GET On Session
+    ...    simulabank
+    ...    ${endpoint}
+    ...    headers=${headers}
+    ...    expected_status=${expected_status}
+
+    RETURN    ${response}   
+
+
+############################################################
 # Executa uma requisição POST.
 #
 # expected_status=anything permite receber respostas
@@ -226,3 +266,14 @@ Realizar DELETE Autenticado
     ...    headers=${headers}
 
     RETURN    ${response}
+
+
+############################################################
+# Valida campo obrigatório
+#
+# Aceita:
+# - Texto
+# - Número
+# - Valor monetário
+#
+############################################################
