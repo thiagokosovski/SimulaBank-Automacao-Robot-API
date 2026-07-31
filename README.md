@@ -1,534 +1,324 @@
 # SimulaBank - Automação de APIs com Robot Framework
 
-
 ![Robot Framework Tests](https://github.com/thiagokosovski/SimulaBank-Automacao-Robot-API/actions/workflows/robot-tests.yml/badge.svg)
 
+Projeto de automação de testes de APIs REST utilizando **Robot Framework**,
+desenvolvido com foco em uma arquitetura organizada, reutilizável e próxima
+de estruturas utilizadas em projetos profissionais de QA Automation.
 
-Projeto de automação de testes de APIs REST utilizando **Robot Framework**, desenvolvido para simular uma estrutura profissional de QA Automation.
+O projeto tem como objetivo demonstrar a construção de um framework de
+automação de APIs desde a execução dos testes até a integração contínua
+com GitHub Actions.
 
-O projeto tem como objetivo aplicar boas práticas utilizadas em ambientes corporativos:
+---
+
+# Objetivo do Projeto
+
+O objetivo principal é automatizar e validar diferentes comportamentos
+de uma API bancária, contemplando não apenas cenários positivos, mas
+também cenários negativos, validações de contrato e testes relacionados
+à segurança e autenticação.
+
+O framework foi estruturado buscando separar claramente as responsabilidades
+entre:
+
+- Testes
+- Keywords de negócio
+- Keywords HTTP
+- Validações
+- Schemas JSON
+- Payloads
+- Variáveis
+- Dados de teste
+- Bibliotecas Python
+- Configuração de ambiente
+- Relatórios
+- Pipeline CI/CD
+
+Essa separação permite que os testes sejam mais simples de ler, enquanto
+a complexidade da automação permanece concentrada nas camadas responsáveis.
+
+---
+
+# Objetivos Técnicos
+
+O projeto busca demonstrar conhecimentos em:
 
 - Automação de APIs REST
-- Organização por camadas
+- Robot Framework
+- Testes funcionais de API
+- Testes positivos
+- Testes negativos
+- Testes de segurança
+- Autenticação JWT
+- Validação de status HTTP
+- Validação de respostas JSON
+- Validação de JSON Schema
 - Reutilização de keywords
-- Validações centralizadas
-- Controle de variáveis de ambiente
-- Execução contínua utilizando GitHub Actions
+- Separação de responsabilidades
+- Dados de teste externos
+- Variáveis de ambiente
+- Bibliotecas Python auxiliares
+- Git e GitHub
+- GitHub Actions
+- Integração contínua
+- Geração de relatórios
+- Organização de framework de automação
+
+---
+
+# Escopo da Automação
+
+Atualmente o projeto possui automações organizadas por domínio da API.
+
+Os módulos implementados incluem:
+
+- Health
+- Auth
+- Cliente
+- Conta
+- Extrato
+- Depósito
+- Saque
+
+Cada módulo pode possuir diferentes categorias de testes:
+
+```text
+Testes positivos
+        ↓
+Testes negativos
+        ↓
+Testes de segurança
+        ↓
+Validações de contrato
+        ↓
+Validações de regras de negócio
 
 
 ---
 
 # Tecnologias utilizadas
 
+O framework utiliza as seguintes tecnologias e ferramentas:
 
 - Python 3.9
 - Robot Framework
 - RequestsLibrary
+- JSONLibrary
+- JSON Schema
 - Django REST Framework
 - Postman
 - Git
+- GitHub
 - GitHub Actions
 - REST API
 - JWT Authentication
-
 
 ---
 
 # Arquitetura do Projeto
 
+O projeto utiliza uma arquitetura baseada na **separação de responsabilidades**.
 
-```
+Cada camada possui uma função específica dentro do framework, evitando
+que regras de negócio, chamadas HTTP, validações e dados de teste fiquem
+misturados nos arquivos de teste.
+
+```text
 SimulaBank-Automacao-Robot-API
 
 │
+├── .github
+│   │
+│   └── workflows
+│       │
+│       └── robot-tests.yml
+│
+│
 ├── config
 │   │
-│   ├── api_variables.robot
 │   ├── environment.robot
 │   └── package.resource
 │
 │
 ├── libraries
 │   │
-│   └── custom Python libraries
+│   ├── data_library.py
+│   ├── env_library.py
+│   ├── faker_library.py
+│   └── schema_library.py
 │
 │
 ├── resources
 │   │
 │   ├── keywords
+│   │
 │   │   ├── auth_keywords.robot
 │   │   ├── cliente_keywords.robot
+│   │   ├── common_keywords.robot
 │   │   ├── conta_keywords.robot
-│   │   └── health_keywords.robot
+│   │   ├── deposito_keywords.robot
+│   │   ├── extrato_keywords.robot
+│   │   ├── health_keywords.robot
+│   │   └── saque_keywords.robot
 │   │
-│   └── validations
-│       └── http_validations.robot
+│   │
+│   ├── payloads
+│   │
+│   │   ├── deposito
+│   │   │   ├── deposito_caracteres.json
+│   │   │   ├── deposito_negativo.json
+│   │   │   ├── deposito_valido.json
+│   │   │   └── deposito_zero.json
+│   │   │
+│   │   ├── saque
+│   │   │   ├── saque_maior_saldo.json
+│   │   │   ├── saque_negativo.json
+│   │   │   ├── saque_valido.json
+│   │   │   └── saque_zero.json
+│   │   │
+│   │   ├── login.json
+│   │   └── login_extrato_vazio.json
+│   │
+│   │
+│   ├── schemas
+│   │
+│   │   ├── cliente_schema.json
+│   │   ├── conta_schema.json
+│   │   ├── error_schema.json
+│   │   ├── extrato_schema.json
+│   │   ├── health_schema.json
+│   │   └── login_schema.json
+│   │
+│   │
+│   ├── validations
+│   │
+│   │   ├── deposito_validations.robot
+│   │   ├── error_validations.robot
+│   │   ├── extrato_validations.robot
+│   │   ├── http_validations.robot
+│   │   ├── saque_validations.robot
+│   │   ├── schema_validations.robot
+│   │   └── security_validations.robot
+│   │
+│   │
+│   └── variables
+│       │
+│       ├── api_variables.robot
+│       ├── auth_variables.robot
+│       └── endpoint_variables.robot
+│
+│
+├── scripts
+│   │
+│   └── robot_summary.py
+│
+│
+├── test_data
+│   │
+│   └── login_data.yaml
 │
 │
 ├── tests
 │   │
 │   ├── Auth
-│   │
 │   ├── Cliente
-│   │
 │   ├── Conta
-│   │
-│   └── Health
+│   ├── Deposito
+│   ├── Extrato
+│   ├── Health
+│   └── Saque
 │
 │
 ├── results
 │
 │
 ├── requirements.txt
-│
-│
-└── .github
-    │
-    └── workflows
-        └── robot-tests.yml
-
-```
+├── run_tests.bat
+├── run_tests.ps1
+├── .env.example
+└── README.md
 
 
 ---
 
 # Organização dos Testes
 
+Os testes são organizados por **domínio funcional da API**.
 
-Os testes são separados por domínio da API.
+Cada módulo pode possuir diferentes arquivos de teste, separados de
+acordo com o tipo de comportamento que está sendo validado.
 
-
-## Health API
-
-Validação da disponibilidade da API.
-
-
-Exemplo:
-
-```
-CT-HEALTH-001
-GET Health retorna API online
-```
-
-
-
-## Auth API
-
-Testes relacionados à autenticação JWT.
-
-
-Exemplos:
-
-```
-CT-AUTH-001
-POST Login retorna token JWT
-
-
-CT-AUTH-002
-POST Login inválido retorna erro
-```
-
-
-
-## Cliente API
-
-Testes dos endpoints de clientes.
-
-
-Exemplos:
-
-```
-CT-CLI-001
-GET Cliente autenticado retorna 200
-
-
-CT-CLI-002
-GET Cliente sem token retorna 401
-
-
-CT-CLI-003
-GET Cliente com token inválido retorna 401
-```
-
-
-
-## Conta API
-
-Testes relacionados às contas bancárias.
-
-
-Exemplos:
-
-```
-CT-CONTA-001
-GET Conta autenticada retorna 200
-
-
-CT-CONTA-002
-GET Conta sem token retorna 401
-```
-
+```text
+tests/
+│
+├── Auth
+│
+├── Cliente
+│
+├── Conta
+│
+├── Deposito
+│
+├── Extrato
+│
+├── Health
+│
+└── Saque
 
 
 ---
 
 # Instalação
 
+## Pré-requisitos
 
-Clonar o projeto:
+Antes de executar o projeto, é necessário possuir:
 
+- Python 3.9
+- Git
+- Ambiente virtual Python
+- Acesso à API SimulaBank
+- Credenciais válidas para execução dos testes
+
+---
+
+# Clonando o Projeto
+
+Clonar o repositório:
 
 ```bash
 git clone https://github.com/thiagokosovski/SimulaBank-Automacao-Robot-API.git
-```
 
 
-Criar ambiente virtual:
-
-
-```bash
-python -m venv venv
-```
-
-
-Ativar ambiente virtual:
-
-
-Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-
-Instalar dependências:
-
-
-```bash
-pip install -r requirements.txt
-```
-
-
----
-
-# Configuração de Ambiente
-
-
-O projeto utiliza variáveis de ambiente para informações sensíveis.
-
-
-Exemplo:
-
-
-```
-BASE_URL
-
-API_USERNAME
-
-API_PASSWORD
-```
-
-
-Localmente essas informações são carregadas através da configuração do ambiente.
-
-
-No GitHub Actions elas são armazenadas utilizando:
-
-
-```
-Repository Settings
-
-      ↓
-
-Secrets and variables
-
-      ↓
-
-Actions
-```
-
-
----
-
-# Executando os testes localmente
-
-
-Executar todos os testes:
-
-
-```bash
-robot tests
-```
-
-
-Executar somente um módulo:
-
-
-Auth:
-
-```bash
-robot tests/Auth
-```
-
-
-Cliente:
-
-```bash
-robot tests/Cliente
-```
-
-
-Conta:
-
-```bash
-robot tests/Conta
-```
-
-
-Health:
-
-```bash
-robot tests/Health
-```
-
-
----
-
-# Execução utilizando Tags
-
-
-Os testes possuem tags para facilitar a execução.
-
-
-Exemplo:
-
-
-Smoke tests:
-
-
-```bash
-robot -i smoke tests
-```
-
-
-Regression:
-
-
-```bash
-robot -i regression tests
-```
-
-
----
-
-# GitHub Actions - CI/CD
-
-
-O projeto possui integração contínua utilizando GitHub Actions.
-
-
-O pipeline executa automaticamente:
-
-
-## Push
-
-
-Quando ocorre:
-
-
-```
-git push origin main
-```
-
-
-## Pull Request
-
-
-Quando uma alteração é enviada para revisão.
-
-
-## Execução manual
-
-
-Também é possível executar através do GitHub:
-
-
-```
-Actions
-
- ↓
-
-Robot Framework Tests API
-
- ↓
-
-Run workflow
-```
-
-
----
-
-# Pipeline de Execução
-
-
-Fluxo do CI/CD:
-
-
-```
-Developer
-
-    |
-
-    |
-
-git push
-
-    |
-
-    v
-
-GitHub Actions
-
-    |
-
-    |
-
-Checkout código
-
-    |
-
-    |
-
-Configura Python
-
-    |
-
-    |
-
-Instala dependências
-
-    |
-
-    |
-
-Carrega Secrets
-
-    |
-
-    |
-
-Executa Robot Framework
-
-    |
-
-    |
-
-Gera relatórios
-
-    |
-
-    v
-
-Resultado PASS / FAIL
-
-```
-
-
----
-
-# Relatórios de Execução
-
-
-Após cada execução são gerados:
-
-
-```
-results/
-
-├── output.xml
-
-├── log.html
-
-└── report.html
-
-```
-
-
-Os relatórios ficam disponíveis como artefatos no GitHub Actions.
-
-
-Eles permitem analisar:
-
-
-- Testes executados
-- Tempo de execução
-- Keywords utilizadas
-- Erros encontrados
-- Evidências da execução
-
-
----
-
-# Boas práticas aplicadas
-
-
-✔ Separação entre testes e recursos
-
-✔ Keywords reutilizáveis
-
-✔ Validações centralizadas
-
-✔ Configuração externa
-
-✔ Uso de variáveis de ambiente
-
-✔ Controle de código com Git
-
-✔ Pipeline CI/CD
-
-✔ Relatórios automatizados
-
-✔ Execução manual e automática
-
-
----
 
 # Roadmap
 
+## Concluído
 
-Próximas evoluções:
+- [x] API Health
+- [x] API Auth
+- [x] API Cliente
+- [x] API Conta
+- [x] API Extrato
+- [x] API Depósito
+- [x] API Saque
+- [x] Testes positivos
+- [x] Testes negativos
+- [x] Testes de segurança
+- [x] Autenticação JWT
+- [x] Validações centralizadas
+- [x] Validação de JSON Schema
+- [x] GitHub Actions
+- [x] Relatórios automatizados
 
-
-- [ ] API de Extrato
-
-- [ ] API de Depósito
-
-- [ ] API de Saque
+## Próximas evoluções
 
 - [ ] API PIX
-
 - [ ] API Documentos
-
 - [ ] Paginação e filtros
-
 - [ ] Validação de contratos OpenAPI
-
 - [ ] Execução em múltiplos ambientes
-
 - [ ] Integração com ferramentas de gestão de testes
-
-
----
-
-# Objetivo profissional
-
-
-Este projeto representa uma estrutura de automação de APIs utilizando Robot Framework seguindo conceitos aplicados em equipes profissionais de QA Automation.
-
-O foco é demonstrar:
-
-- Conhecimento em testes de API
-- Automação com Robot Framework
-- Integração contínua
-- Organização de framework
-- Boas práticas de engenharia de qualidade
+- [ ] Testes Data Driven avançados
+- [ ] Geração de massa dinâmica com Faker
