@@ -183,6 +183,7 @@ Realizar GET Autenticado
     ...    simulabank
     ...    ${endpoint}
     ...    headers=${headers}
+    ...    expected_status=anything
 
     RETURN    ${response}
 

@@ -199,3 +199,156 @@ CT-SAQ-003 - Realizar Saque Com Valor Zero
 
     ...    ${json}    
 
+
+############################################################
+# MÓDULO 8.2.2
+#
+# CT-SAQ-003
+#
+# Saque com valor negativo
+#
+############################################################
+
+CT-SAQ-004 - Realizar Saque Com Valor Negativo
+
+    [Tags]
+    ...    saque
+    ...    post
+    ...    negativo
+    ...    CT-SAQ-003
+
+
+    ########################################################
+    # Executa o saque
+    #
+    # O payload utilizado contém:
+    #
+    # "valor": -50
+    #
+    ########################################################
+
+    ${response}=
+
+    ...    Realizar Saque
+
+    ...    resources/payloads/saque/saque_negativo.json
+
+
+    ########################################################
+    # Valida status HTTP
+    #
+    # A API deve rejeitar o valor negativo.
+    #
+    # Esperado:
+    #
+    # HTTP 400
+    ########################################################
+
+    Validar Status HTTP
+
+    ...    ${response}
+
+    ...    400
+
+
+    ########################################################
+    # Converte resposta HTTP para JSON
+    ########################################################
+
+    ${json}=
+
+    ...    Converter Resposta para JSON
+
+    ...    ${response}
+
+
+    ########################################################
+    # Valida mensagem de erro
+    ########################################################
+
+    Validar Saque Valor Deve Ser Maior Que Zero
+
+    ...    ${json}
+
+
+    ########################################################
+    # Exibe retorno no console
+    ########################################################
+
+    Log To Console
+
+    ...    ${json}
+     
+
+############################################################
+# 18.2.5
+#
+# CT-SAQ-006
+#
+# Objetivo:
+#
+# Validar que o endpoint de saque não permite utilização
+# do método GET.
+#
+############################################################
+
+CT-SAQ-005 - Realizar Saque Com Método GET
+
+    [Tags]
+    ...    saque
+    ...    post
+    ...    positivo
+    ...    smoke
+    ...    CT-SAQ-001
+
+
+    ########################################################
+    # Executa saque
+    #
+    # O teste escolhe qual payload deseja utilizar.
+    #
+    ########################################################
+
+    ${response}=
+    ...    Realizar Saque Com Método GET
+    ...    resources/payloads/saque/saque_valido.json
+
+
+    ########################################################
+    # Valida status HTTP
+    #
+    # Esperado:
+    #
+    # 200 OK
+    #
+    ########################################################
+
+    Validar Status HTTP
+    ...    ${response}
+    ...    405
+
+
+    ########################################################
+    # Converte resposta HTTP para JSON
+    ########################################################
+
+    ${json}=
+    ...    Converter Resposta para JSON
+    ...    ${response}
+
+ 
+
+    ########################################################
+    # Valida regras específicas do saque
+    ########################################################
+
+    Validar Método GET Não Permitido
+    ...    ${json}
+
+
+    ########################################################
+    # Exibe retorno no console
+    ########################################################
+
+    Log To Console
+    ...    ${json}    

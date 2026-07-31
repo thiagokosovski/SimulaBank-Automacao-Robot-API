@@ -206,4 +206,131 @@ Validar Saque Valor Deve Ser Maior Que Zero
 
     ...    O valor do saque deve ser maior que zero.
 
+############################################################
+# Validar Método GET Não Permitido
+#
+# Módulo:
+#
+# 18.2.5
+#
+############################################################
 
+Validar Método GET Não Permitido
+
+    [Arguments]
+    ...    ${json}
+
+
+    ########################################################
+    # Obtém campo "detail"
+    ########################################################
+
+    ${detail}=
+    ...    Get From Dictionary
+    ...    ${json}
+    ...    detail
+
+
+    ########################################################
+    # Valida mensagem retornada pela API
+    ########################################################
+
+    Should Be Equal
+    ...    ${detail}
+    ...    Method "GET" not allowed.
+
+
+############################################################
+# Validar Saque Sem Autenticação
+#
+# Objetivo:
+#
+# Validar a mensagem retornada pela API quando uma tentativa
+# de saque é realizada sem credenciais de autenticação.
+#
+# Resposta esperada:
+#
+# {
+#     "detail": "Authentication credentials were not provided."
+# }
+#
+############################################################
+
+Validar Saque Sem Token
+
+    [Arguments]
+    ...    ${json}
+
+
+    ########################################################
+    # Obtém campo "detail"
+    ########################################################
+
+    ${detail}=
+    ...    Get From Dictionary
+    ...    ${json}
+    ...    detail
+
+
+    ########################################################
+    # Valida mensagem retornada pela API
+    ########################################################
+
+    Should Be Equal
+    ...    ${detail}
+    ...    Authentication credentials were not provided.
+
+
+
+Validar Saque com Token Invalido
+
+    [Arguments]    ${json}
+
+
+    ########################################################
+    # Valida detalhe
+    ########################################################
+
+    ${detail}=    Get From Dictionary
+    ...    ${json}
+    ...    detail
+
+
+    Should Be Equal
+    ...    ${detail}
+    ...    Given token not valid for any token type
+
+
+
+    ########################################################
+    # Valida código
+    ########################################################
+
+    ${code}=    Get From Dictionary
+    ...    ${json}
+    ...    code
+
+
+    Should Be Equal
+    ...    ${code}
+    ...    token_not_valid
+
+
+
+    ########################################################
+    # Valida messages
+    ########################################################
+
+    ${messages}=    Get From Dictionary
+    ...    ${json}
+    ...    messages
+
+
+    ${message}=    Get From Dictionary
+    ...    ${messages[0]}
+    ...    message
+
+
+    Should Be Equal
+    ...    ${message}
+    ...    Token is invalid
