@@ -37,7 +37,7 @@ CT-DEP-006 - Realizar Depósito Sem Token
     ...    ${response}
 
 
-    Validar Erro Depósito Sem Autenticacao
+    Validar Acesso Sem Autenticacao
     ...    ${json}
 
     Log To Console
@@ -71,7 +71,7 @@ CT-DEP-007 - Realizar Depósito Com Token Inválido
     ${json}=    Converter Resposta para JSON
     ...    ${response}
 
-    Validar Erro Depósito Token Inválido
+    Validar Token Invalido
     ...    ${json}
         
     Log To Console

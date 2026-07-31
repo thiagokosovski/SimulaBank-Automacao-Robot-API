@@ -78,7 +78,7 @@ CT-SAQ-006 - Realizar Saque sem token
     # Valida regras específicas do saque
     ########################################################
 
-    Validar Saque Sem Token
+    Validar Acesso Sem Autenticacao
     ...    ${json}
 
 
@@ -158,7 +158,7 @@ CT-SAQ-007 - Realizar Saque com token invalido
     # Valida regras específicas do saque
     ########################################################
 
-    Validar Saque com Token Invalido
+    Validar Token Invalido
     ...    ${json}
 
 

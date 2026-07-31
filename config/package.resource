@@ -87,6 +87,7 @@ Resource    ../resources/validations/error_validations.robot
 Resource    ../resources/validations/extrato_validations.robot
 Resource    ../resources/validations/deposito_validations.robot
 Resource    ../resources/validations/saque_validations.robot
+Resource    ../resources/validations/security_validations.robot
 
 
 ############################################################
