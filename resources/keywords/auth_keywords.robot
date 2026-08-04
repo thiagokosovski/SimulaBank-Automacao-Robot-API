@@ -373,17 +373,7 @@ Realizar Login Destinatário PIX
 
     ...    ${base_url}
 
-        Log To Console
-        ...    ====================================
-
-        Log To Console
-        ...    PIX DESTINATARIO USERNAME: ${username}
-
-        Log To Console
-        ...    PIX DESTINATARIO PASSWORD: ${password}
-
-        Log To Console
-        ...    ====================================
+   
     ########################################################
     # ETAPA 5
     #

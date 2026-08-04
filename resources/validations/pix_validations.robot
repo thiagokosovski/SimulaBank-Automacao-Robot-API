@@ -361,3 +361,490 @@ Validar PIX Realizado
     Log
 
     ...    PIX realizado com sucesso. Saldo atual: ${saldo}    
+      
+
+############################################################
+# Validar PIX para CPF Inexistente
+#
+# Módulo:
+#
+# 19.10
+#
+# Objetivo:
+#
+# Validar resposta de tentativa de PIX para CPF inexistente.
+#
+############################################################
+
+Validar PIX CPF Inexistente
+
+    [Arguments]
+    ...    ${json}
+
+
+    ########################################################
+    # Valida campo success
+    ########################################################
+
+    ${success}=
+
+    ...    Get From Dictionary
+
+    ...    ${json}
+
+    ...    success
+
+
+    ${success}=
+
+    ...    Convert To String
+
+    ...    ${success}
+
+
+    Should Be Equal
+
+    ...    ${success}
+
+    ...    False
+
+
+    ########################################################
+    # Valida mensagem
+    ########################################################
+
+    ${message}=
+
+    ...    Get From Dictionary
+
+    ...    ${json}
+
+    ...    message
+
+
+    Should Be Equal
+
+    ...    ${message}
+
+    ...    Cliente destinatário não encontrado.
+
+
+
+
+############################################################
+# Validar PIX com Saldo Insuficiente
+#
+# Módulo:
+#
+# 19.10.2
+#
+# Objetivo:
+#
+# Validar tentativa de PIX com valor superior ao
+# saldo disponível do remetente.
+#
+############################################################
+
+Validar PIX Saldo Insuficiente
+
+    [Arguments]
+    ...    ${json}
+
+
+    ########################################################
+    # Valida success
+    ########################################################
+
+    ${success}=
+
+    ...    Get From Dictionary
+
+    ...    ${json}
+
+    ...    success
+
+
+    ${success}=
+
+    ...    Convert To String
+
+    ...    ${success}
+
+
+    Should Be Equal
+
+    ...    ${success}
+
+    ...    False
+
+
+    ########################################################
+    # Valida mensagem
+    ########################################################
+
+    ${message}=
+
+    ...    Get From Dictionary
+
+    ...    ${json}
+
+    ...    message
+
+
+    Should Be Equal
+
+    ...    ${message}
+
+    ...    Saldo insuficiente.
+        
+############################################################
+# Validar PIX para Própria Conta
+#
+# Objetivo:
+#
+# Validar que a API não permite realizar PIX
+# para a própria conta do remetente.
+#
+# Retorno esperado:
+#
+# success = false
+#
+# message = "Não é permitido realizar PIX para a própria conta."
+#
+############################################################
+
+Validar PIX para Própria Conta
+
+    [Arguments]
+    ...    ${json}
+
+
+    ########################################################
+    # Valida sucesso
+    ########################################################
+
+    ${success}=
+
+    ...    Get From Dictionary
+
+    ...    ${json}
+
+    ...    success
+
+
+    Should Be Equal
+
+    ...    ${success}
+
+    ...    ${False}
+
+
+    ########################################################
+    # Valida mensagem
+    ########################################################
+
+    ${message}=
+
+    ...    Get From Dictionary
+
+    ...    ${json}
+
+    ...    message
+
+
+    Should Be Equal
+
+    ...    ${message}
+
+    ...    Não é permitido realizar PIX para a própria conta.
+    
+############################################################
+# Validar PIX com Valor Zero
+#
+# Módulo:
+#
+# 19.13
+#
+# Objetivo:
+#
+# Validar tentativa de PIX com valor igual a zero.
+#
+# Retorno esperado:
+#
+# {
+#     "valor": [
+#         "O valor do PIX deve ser maior que zero."
+#     ]
+# }
+#
+############################################################
+
+Validar PIX Valor Zero
+
+    [Arguments]
+    ...    ${json}
+
+
+    ########################################################
+    # ETAPA 1
+    #
+    # Obtém a mensagem de validação do campo valor.
+    #
+    ########################################################
+
+    ${valor}=
+
+    ...    Get From Dictionary
+
+    ...    ${json}
+
+    ...    valor
+
+
+    ########################################################
+    # ETAPA 2
+    #
+    # Valida se a mensagem foi retornada.
+    #
+    ########################################################
+
+    Should Not Be Empty
+
+    ...    ${valor}
+
+
+    ########################################################
+    # ETAPA 3
+    #
+    # Valida mensagem da API.
+    #
+    ########################################################
+
+    ${mensagem}=
+
+    ...    Get From List
+
+    ...    ${valor}
+
+    ...    0
+
+
+    Should Be Equal
+
+    ...    ${mensagem}
+
+    ...    O valor do PIX deve ser maior que zero.
+
+############################################################
+# Validar PIX com Valor Negativo
+#
+# Módulo:
+#
+# 19.14
+#
+# Objetivo:
+#
+# Validar tentativa de PIX com valor negativo.
+#
+# Retorno esperado:
+#
+# {
+#     "valor": [
+#         "O valor do PIX deve ser maior que zero."
+#     ]
+# }
+#
+############################################################
+
+Validar PIX Valor Negativo
+
+    [Arguments]
+    ...    ${json}
+
+
+    ########################################################
+    # ETAPA 1
+    #
+    # Obtém o campo de validação "valor".
+    #
+    ########################################################
+
+    ${valor}=
+
+    ...    Get From Dictionary
+
+    ...    ${json}
+
+    ...    valor
+
+
+    ########################################################
+    # ETAPA 2
+    #
+    # Valida se a mensagem foi retornada.
+    #
+    ########################################################
+
+    Should Not Be Empty
+
+    ...    ${valor}
+
+
+    ########################################################
+    # ETAPA 3
+    #
+    # Obtém a primeira mensagem da lista.
+    #
+    ########################################################
+
+    ${mensagem}=
+
+    ...    Get From List
+
+    ...    ${valor}
+
+    ...    0
+
+
+    ########################################################
+    # ETAPA 4
+    #
+    # Valida mensagem retornada pela API.
+    #
+    ########################################################
+
+    Should Be Equal
+
+    ...    ${mensagem}
+
+    ...    O valor do PIX deve ser maior que zero.
+      
+
+############################################################
+# Validar PIX Sem Autenticação
+#
+# Módulo:
+#
+# 19.15
+#
+# Objetivo:
+#
+# Validar que a API bloqueia a realização de PIX
+# sem autenticação.
+#
+# Retorno esperado:
+#
+# {
+#     "detail": "Authentication credentials were not provided."
+# }
+#
+############################################################
+
+Validar PIX Sem Autenticação
+
+    [Arguments]
+    ...    ${json}
+
+
+    ########################################################
+    # ETAPA 1
+    #
+    # Obtém o campo "detail".
+    #
+    ########################################################
+
+    ${detail}=
+
+    ...    Get From Dictionary
+
+    ...    ${json}
+
+    ...    detail
+
+
+    ########################################################
+    # ETAPA 2
+    #
+    # Valida se a mensagem de segurança foi retornada.
+    #
+    ########################################################
+
+    Should Not Be Empty
+
+    ...    ${detail}
+
+
+    ########################################################
+    # ETAPA 3
+    #
+    # Valida mensagem retornada pela API.
+    #
+    ########################################################
+
+    Should Be Equal
+
+    ...    ${detail}
+
+    ...    Authentication credentials were not provided.    
+       
+
+############################################################
+# Validar PIX com Token Inválido
+#
+# Módulo:
+#
+# 19.16
+#
+# Objetivo:
+#
+# Validar que a API rejeita uma tentativa de PIX
+# utilizando um token JWT inválido.
+#
+############################################################
+
+Validar PIX com Token Inválido
+
+    [Arguments]
+    ...    ${json}
+
+
+    ########################################################
+    # ETAPA 1
+    #
+    # Obtém a mensagem retornada pela API.
+    #
+    ########################################################
+
+    ${message}=
+
+    ...    Get From Dictionary
+
+    ...    ${json}
+
+    ...    detail
+
+
+    ########################################################
+    # ETAPA 2
+    #
+    # Valida se a mensagem foi retornada.
+    #
+    ########################################################
+
+    Should Not Be Empty
+
+    ...    ${message}
+
+
+    ########################################################
+    # ETAPA 3
+    #
+    # Valida mensagem de autenticação.
+    #
+    ########################################################
+
+    Should Be Equal
+
+    ...    ${message}
+
+    ...    Given token not valid for any token type    

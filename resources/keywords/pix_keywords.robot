@@ -284,3 +284,167 @@ Consultar Saldo do Remetente PIX
     RETURN
 
     ...    ${response}
+   
+############################################################
+# Realizar PIX Sem Autenticação
+#
+# Módulo:
+#
+# 19.15
+#
+# Objetivo:
+#
+# Tentar realizar um PIX sem enviar token JWT.
+#
+# Fluxo:
+#
+# 1. Monta o body
+# 2. Executa POST sem autenticação
+# 3. Retorna response HTTP
+#
+############################################################
+
+Realizar PIX Sem Autenticação
+
+    [Arguments]
+    ...    ${cpf_destinatario}
+    ...    ${valor}
+    ...    ${descricao}
+
+
+    ########################################################
+    # ETAPA 1
+    #
+    # Monta o body do PIX.
+    #
+    ########################################################
+
+    ${body}=
+
+    ...    Create Dictionary
+
+    ...    cpf=${cpf_destinatario}
+
+    ...    valor=${valor}
+
+    ...    descricao=${descricao}
+
+
+    ########################################################
+    # ETAPA 2
+    #
+    # Executa POST sem Authorization.
+    #
+    ########################################################
+
+    ${response}=
+
+    ...    POST On Session
+
+    ...    simulabank
+
+    ...    ${API_PREFIX}${PIX_ENDPOINT}
+
+    ...    json=${body}
+
+    ...    expected_status=anything
+
+
+    ########################################################
+    # ETAPA 3
+    #
+    # Retorna response.
+    #
+    ########################################################
+
+    RETURN
+
+    ...    ${response}
+        
+
+
+############################################################
+# Realizar PIX com Token Inválido
+#
+# Módulo:
+#
+# 19.16
+#
+# Objetivo:
+#
+# Tentar realizar um PIX utilizando um token JWT inválido.
+#
+############################################################
+
+Realizar PIX com Token Inválido
+
+    [Arguments]
+    ...    ${cpf_destinatario}
+    ...    ${valor}
+    ...    ${descricao}
+
+
+    ########################################################
+    # ETAPA 1
+    #
+    # Monta o body do PIX.
+    #
+    ########################################################
+
+    ${body}=
+
+    ...    Create Dictionary
+
+    ...    cpf=${cpf_destinatario}
+
+    ...    valor=${valor}
+
+    ...    descricao=${descricao}
+
+
+    ########################################################
+    # ETAPA 2
+    #
+    # Monta o header com token inválido.
+    #
+    ########################################################
+
+    ${headers}=
+
+    ...    Create Dictionary
+
+    ...    Authorization=Bearer ${TOKEN_INVALIDO}
+
+
+    ########################################################
+    # ETAPA 3
+    #
+    # Executa POST utilizando token inválido.
+    #
+    ########################################################
+
+    ${response}=
+
+    ...    POST On Session
+
+    ...    simulabank
+
+    ...    ${API_PREFIX}${PIX_ENDPOINT}
+
+    ...    json=${body}
+
+    ...    headers=${headers}
+
+    ...    expected_status=anything
+
+
+    ########################################################
+    # ETAPA 4
+    #
+    # Retorna response.
+    #
+    ########################################################
+
+    RETURN
+
+    ...    ${response}    
