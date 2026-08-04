@@ -3,8 +3,7 @@
 ![Robot Framework Tests](https://github.com/thiagokosovski/SimulaBank-Automacao-Robot-API/actions/workflows/robot-tests.yml/badge.svg)
 
 Projeto de automação de testes de APIs REST utilizando **Robot Framework**,
-desenvolvido com foco em uma arquitetura organizada, reutilizável e próxima
-de estruturas utilizadas em projetos profissionais de QA Automation.
+desenvolvido com foco em uma arquitetura organizada e reutilizável 
 
 O projeto tem como objetivo demonstrar a construção de um framework de
 automação de APIs desde a execução dos testes até a integração contínua
@@ -240,7 +239,7 @@ SimulaBank-Automacao-Robot-API
 └── README.md
 
 
----
+
 
 # Organização dos Testes
 

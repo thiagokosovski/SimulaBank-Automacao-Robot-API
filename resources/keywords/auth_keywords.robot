@@ -275,3 +275,150 @@ Executar Cenários Negativos de Login
         ...    ${cenario}
 
     END
+
+
+############################################################
+# Login do Destinatário PIX
+#
+# Módulo:
+#
+# 19.2
+#
+# Objetivo:
+#
+# Realizar autenticação do usuário destinatário
+# responsável por receber o PIX.
+#
+# Credenciais utilizadas:
+#
+# PIX_DESTINATARIO_USERNAME
+# PIX_DESTINATARIO_PASSWORD
+#
+# As credenciais são obtidas através das variáveis
+# de ambiente.
+#
+# Fluxo:
+#
+# 1. Obtém URL da API
+# 2. Obtém username do destinatário
+# 3. Obtém password do destinatário
+# 4. Cria sessão HTTP
+# 5. Monta body do login
+# 6. Executa POST /api/token/
+# 7. Salva os tokens JWT
+#
+############################################################
+
+Realizar Login Destinatário PIX
+
+
+    ########################################################
+    # ETAPA 1
+    #
+    # Obtém a URL da API através da configuração
+    # do ambiente.
+    #
+    ########################################################
+
+    ${base_url}=
+
+    ...    Get Base Url
+
+
+    ########################################################
+    # ETAPA 2
+    #
+    # Obtém o username do destinatário.
+    #
+    # A informação vem do ambiente e não fica
+    # armazenada diretamente no código.
+    #
+    ########################################################
+
+    ${username}=
+
+    ...    Get Environment Variable
+
+    ...    PIX_DESTINATARIO_USERNAME
+
+
+    ########################################################
+    # ETAPA 3
+    #
+    # Obtém a senha do destinatário.
+    #
+    # A senha também é obtida através da variável
+    # de ambiente.
+    #
+    ########################################################
+
+    ${password}=
+
+    ...    Get Environment Variable
+
+    ...    PIX_DESTINATARIO_PASSWORD
+
+
+    ########################################################
+    # ETAPA 4
+    #
+    # Cria a sessão HTTP que será utilizada
+    # pelas requisições da API.
+    #
+    ########################################################
+
+    Create Session
+
+    ...    simulabank
+
+    ...    ${base_url}
+
+
+    ########################################################
+    # ETAPA 5
+    #
+    # Monta o body utilizado pelo endpoint
+    # de autenticação.
+    #
+    ########################################################
+
+    ${body}=
+
+    ...    Montar Body Login
+
+    ...    ${username}
+
+    ...    ${password}
+
+
+    ########################################################
+    # ETAPA 6
+    #
+    # Executa o login.
+    #
+    # Endpoint:
+    #
+    # POST /api/token/
+    #
+    ########################################################
+
+    ${response}=
+
+    ...    Executar Login
+
+    ...    ${body}
+
+
+    ########################################################
+    # ETAPA 7
+    #
+    # Salva os tokens retornados pela API.
+    #
+    # Access Token
+    # Refresh Token
+    #
+    ########################################################
+
+    Salvar Tokens
+
+    ...    ${response}

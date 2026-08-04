@@ -36,3 +36,15 @@ ${TOKEN_MALFORMADO}
 
 ${TOKEN_EXPIRADO}
 ...    eyJhbGciOiJIUzI1NiJ9.expirado.assinatura
+   
+
+
+############################################################
+# Token do Remetente
+#
+# Armazena o JWT utilizado pelo usuário que irá realizar
+# o pagamento PIX.
+#
+############################################################
+
+${TOKEN_REMETENTE}    ${EMPTY}

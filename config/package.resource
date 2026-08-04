@@ -72,6 +72,7 @@ Resource    ../resources/keywords/cliente_keywords.robot
 Resource    ../resources/keywords/extrato_keywords.robot
 Resource    ../resources/keywords/deposito_keywords.robot
 Resource    ../resources/keywords/saque_keywords.robot
+Resource    ../resources/keywords/pix_keywords.robot
 
 
 
@@ -88,6 +89,7 @@ Resource    ../resources/validations/extrato_validations.robot
 Resource    ../resources/validations/deposito_validations.robot
 Resource    ../resources/validations/saque_validations.robot
 Resource    ../resources/validations/security_validations.robot
+Resource    ../resources/validations/pix_validations.robot
 
 
 ############################################################
