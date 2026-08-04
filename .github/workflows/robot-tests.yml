@@ -137,11 +137,23 @@ jobs:
           fi
 
 
+          if [ -z "$PIX_DESTINATARIO_USERNAME" ]; then
+            echo "ERROR: PIX_DESTINATARIO_USERNAME is empty"
+            exit 1
+          fi
+
+
+          if [ -z "$PIX_DESTINATARIO_PASSWORD" ]; then
+            echo "ERROR: PIX_DESTINATARIO_PASSWORD is empty"
+            exit 1
+          fi
+
+
           echo "BASE_URL configured"
-
           echo "API_USERNAME configured"
-
           echo "API_PASSWORD configured"
+          echo "PIX_DESTINATARIO_USERNAME configured"
+          echo "PIX_DESTINATARIO_PASSWORD configured"
 
 
 
