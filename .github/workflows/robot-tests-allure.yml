@@ -1,0 +1,135 @@
+name: Robot Tests - Allure
+
+on:
+
+  # Permite executar manualmente pelo GitHub Actions
+  workflow_dispatch:
+
+  # Permite executar automaticamente quando houver
+  # alterações no projeto.
+  #
+  # Podemos restringir isso depois, se necessário.
+  push:
+    branches:
+      - main
+
+
+jobs:
+
+  robot-tests-allure:
+
+    name: Robot Framework + Allure
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+      # =========================================================
+      # 1. Baixar o código do projeto
+      # =========================================================
+
+      - name: Checkout do projeto
+
+        uses: actions/checkout@v4
+
+
+      # =========================================================
+      # 2. Configurar Python
+      # =========================================================
+
+      - name: Configurar Python
+
+        uses: actions/setup-python@v5
+
+        with:
+          python-version: "3.9"
+
+
+      # =========================================================
+      # 3. Instalar dependências
+      # =========================================================
+
+      - name: Instalar dependências
+
+        run: |
+
+          python -m pip install --upgrade pip
+
+          pip install -r requirements.txt
+
+
+      # =========================================================
+      # 4. Executar testes Robot Framework
+      #
+      # IMPORTANTE:
+      #
+      # Esta pipeline é independente da pipeline tradicional.
+      #
+      # O listener Allure será utilizado somente aqui.
+      # =========================================================
+
+      - name: Executar testes com Allure
+
+        run: |
+
+          robot \
+            --listener allure_robotframework \
+            --outputdir results \
+            tests
+
+
+      # =========================================================
+      # 5. Verificar resultados gerados pelo Allure
+      #
+      # Esta etapa serve principalmente para diagnóstico.
+      # =========================================================
+
+      - name: Verificar resultados Allure
+
+        if: always()
+
+        run: |
+
+          echo "Conteúdo de output/allure:"
+
+          find output/allure -maxdepth 1 -type f | head -20
+
+
+      # =========================================================
+      # 6. Publicar artefatos tradicionais do Robot
+      #
+      # Mantemos os relatórios tradicionais disponíveis.
+      # =========================================================
+
+      - name: Upload relatórios Robot
+
+        if: always()
+
+        uses: actions/upload-artifact@v4
+
+        with:
+
+          name: robot-results-allure-pipeline
+
+          path: results/
+
+
+      # =========================================================
+      # 7. Publicar resultados do Allure
+      #
+      # Estes são os arquivos utilizados posteriormente
+      # para gerar o relatório visual do Allure.
+      # =========================================================
+
+      - name: Upload resultados Allure
+
+        if: always()
+
+        uses: actions/upload-artifact@v4
+
+        with:
+
+          name: allure-results
+
+          path: output/allure/

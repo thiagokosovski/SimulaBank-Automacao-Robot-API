@@ -100,3 +100,19 @@ Resource    ../resources/validations/pix_validations.robot
 
 Library     ../libraries/data_library.py
 Library     ../libraries/faker_library.py
+
+############################################################
+# Integração centralizada com Allure
+############################################################
+
+Resource    allure.resource
+
+############################################################
+# Configuração centralizada do Allure
+#
+# Contém os diretórios utilizados pela camada de relatórios
+# Allure.
+############################################################
+
+Variables    allure_variables.robot
+
