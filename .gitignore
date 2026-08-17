@@ -65,3 +65,20 @@ htmlcov/
 # ==========================
 dist/
 build/
+
+
+
+# ==========================
+# Allure - Resultados
+# ==========================
+output/allure/
+
+# ==========================
+# Allure - Relatório HTML
+# ==========================
+output/allure-report/
+
+# ==========================
+# Allure - Histórico
+# ==========================
+output/allure-history/

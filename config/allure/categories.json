@@ -1,0 +1,25 @@
+[
+  {
+    "name": "HTTP Error",
+    "matchedStatuses": [
+      "broken"
+    ],
+    "messageRegex": ".*(HTTPError|HTTP [45][0-9]{2}|status code).*"
+  },
+  {
+    "name": "Authentication",
+    "messageRegex": ".*(Unauthorized|authentication|token|JWT|401|403).*"
+  },
+  {
+    "name": "Schema Validation",
+    "messageRegex": ".*(schema|Schema|JSON schema|validation|ValidationError).*"
+  },
+  {
+    "name": "Assertion",
+    "messageRegex": ".*(AssertionError|should be|Expected|expected|assert).*"
+  },
+  {
+    "name": "Connection",
+    "messageRegex": ".*(ConnectionError|connection|timeout|timed out|Connect).*"
+  }
+]

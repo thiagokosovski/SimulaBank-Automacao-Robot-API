@@ -105,7 +105,8 @@ Library     ../libraries/faker_library.py
 # Integração centralizada com Allure
 ############################################################
 
-Resource    allure.resource
+Resource    allure/allure.resource
+
 
 ############################################################
 # Configuração centralizada do Allure
@@ -114,5 +115,4 @@ Resource    allure.resource
 # Allure.
 ############################################################
 
-Variables    allure_variables.robot
-
+Variables    allure/allure_variables.robot

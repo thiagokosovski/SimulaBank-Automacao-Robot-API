@@ -650,3 +650,148 @@ CT-PIX-012 - PIX com valor negativo
     Log To Console
 
     ...    ${json}
+
+
+############################################################
+# CT-PIX-013
+#
+# Módulo:
+#
+# 19.14
+#
+# Objetivo:
+#
+# Validar tentativa de PIX com valor negativo.
+#
+############################################################
+
+CT-PIX-013 - PIX com simulação de erro
+
+    [Tags]
+    ...    pix
+    ...    negative
+    ...    negativo
+    ...    CT-PIX-012
+
+
+    ############################################################
+    # ETAPA 1
+    #
+    # Consulta o destinatário.
+    #
+    ############################################################
+
+    ${response_destinatario}=
+
+    ...    Consultar Destinatário PIX
+
+
+    Validar Status HTTP
+
+    ...    ${response_destinatario}
+
+    ...    200
+
+
+    ${json_destinatario}=
+
+    ...    Converter Resposta para JSON
+
+    ...    ${response_destinatario}
+
+
+    ############################################################
+    # ETAPA 2
+    #
+    # Captura CPF do destinatário.
+    #
+    ############################################################
+
+    ${cpf_destinatario}=
+
+    ...    Extrair CPF do Destinatário
+
+    ...    ${json_destinatario}
+      
+    ########################################################
+    # ETAPA 1
+    #
+    # Carrega payload do cenário.
+    #
+    ########################################################
+
+    ${payload}=
+
+    ...    Load JSON From File
+
+    ...    resources/payloads/pix/pix_valor_negativo.json
+
+
+    ########################################################
+    # ETAPA 2
+    #
+    # Executa PIX utilizando valor negativo.
+    #
+    ########################################################
+
+    ${response}=
+
+    ...    Realizar PIX
+
+    ...    ${cpf_destinatario}
+
+    ...    ${payload}[valor]
+
+    ...    ${payload}[descricao]
+
+
+    ########################################################
+    # ETAPA 3
+    #
+    # Valida status HTTP.
+    #
+    ########################################################
+
+    Validar Status HTTP
+
+    ...    ${response}
+
+    ...    250
+
+
+    ########################################################
+    # ETAPA 4
+    #
+    # Converte resposta para JSON.
+    #
+    ########################################################
+
+    ${json}=
+
+    ...    Converter Resposta para JSON
+
+    ...    ${response}
+
+
+    ########################################################
+    # ETAPA 5
+    #
+    # Valida regra de negócio.
+    #
+    ########################################################
+
+    Validar PIX Valor Negativo
+
+    ...    ${json}
+
+
+    ########################################################
+    # ETAPA 6
+    #
+    # Evidência.
+    #
+    ########################################################
+
+    Log To Console
+
+    ...    ${json}
