@@ -1,64 +1,3 @@
-# =========================================================
-# MÓDULO 7
-# GITHUB ACTIONS + ROBOT FRAMEWORK + ALLURE
-# =========================================================
-
-name: Robot Tests - Allure
-
-
-# =========================================================
-# MÓDULO 10
-# GATILHOS DO WORKFLOW
-# =========================================================
-#
-# O workflow pode ser executado de duas formas:
-#
-# 1. Automaticamente após push na main
-#
-# 2. Manualmente pelo GitHub Actions
-#
-# Neste momento NÃO utilizaremos pull_request.
-#
-# Isso evita executar os mesmos testes duas vezes durante
-# o Pull Request, já que a pipeline tradicional já possui
-# esse gatilho.
-#
-# =========================================================
-
-on:
-
-  # -------------------------------------------------------
-  # EXECUÇÃO AUTOMÁTICA
-  # -------------------------------------------------------
-
-  push:
-
-    branches:
-
-      - main
-
-
-  # -------------------------------------------------------
-  # EXECUÇÃO MANUAL
-  # -------------------------------------------------------
-  #
-  # GitHub:
-  #
-  # Actions
-  #   ↓
-  # Robot Tests - Allure
-  #   ↓
-  # Run workflow
-  #
-  # -------------------------------------------------------
-
-  workflow_dispatch:
-
-
-# =========================================================
-# JOBS
-# =========================================================
-
 jobs:
 
   robot-tests-allure:
@@ -67,280 +6,68 @@ jobs:
 
     runs-on: ubuntu-latest
 
-
-    # =====================================================
-    # STEPS
-    # =====================================================
-
     steps:
 
-
-      # =====================================================
-      # 1. CHECKOUT DO PROJETO
-      # =====================================================
-      #
-      # O GitHub Actions executa o workflow em um runner
-      # temporário.
-      #
-      # Precisamos baixar o código do repositório.
-      #
-      # =====================================================
-
       - name: Checkout do projeto
-
         uses: actions/checkout@v4
 
-
-      # =====================================================
-      # 2. CONFIGURAR PYTHON
-      # =====================================================
-      #
-      # O projeto utiliza Python 3.9.
-      #
-      # Mantemos a mesma versão no CI.
-      #
-      # =====================================================
-
       - name: Configurar Python
-
         uses: actions/setup-python@v5
-
         with:
-
           python-version: "3.9"
 
-
-      # =====================================================
-      # 3. VERIFICAR AMBIENTE
-      # =====================================================
-      #
-      # Etapa utilizada para diagnóstico.
-      #
-      # =====================================================
-
       - name: Verificar ambiente
-
         run: |
-
           echo "========================================"
           echo "AMBIENTE DO GITHUB ACTIONS"
           echo "========================================"
 
-          echo ""
-
           echo "Python:"
           python --version
-
-          echo ""
 
           echo "Node:"
           node --version
 
-          echo ""
-
           echo "NPM:"
           npm --version
 
-
-      # =====================================================
-      # 4. INSTALAR DEPENDÊNCIAS
-      # =====================================================
-      #
-      # As bibliotecas Python são instaladas através do
-      # requirements.txt.
-      #
-      # Entre elas temos:
-      #
-      # robotframework
-      # allure-robotframework
-      #
-      # =====================================================
-
       - name: Instalar dependências
-
         run: |
-
           echo "========================================"
           echo "INSTALANDO DEPENDÊNCIAS"
           echo "========================================"
 
           python -m pip install --upgrade pip
-
           pip install -r requirements.txt
 
-
-      # =====================================================
-      # 5. INSTALAR ALLURE COMMANDLINE
-      # =====================================================
-      #
-      # Existem duas partes:
-      #
-      # allure-robotframework
-      #
-      #     Integra o Robot Framework ao Allure.
-      #
-      #
-      # allure-commandline
-      #
-      #     Gera o relatório HTML.
-      #
-      # =====================================================
-
       - name: Instalar Allure Commandline
-
         run: |
-
           echo "========================================"
           echo "INSTALANDO ALLURE COMMANDLINE"
           echo "========================================"
 
           npm install -g allure-commandline
 
-          echo ""
-
           echo "Versão do Allure:"
-
           allure --version
 
-
-      # =====================================================
-      # 6. PREPARAR DIRETÓRIOS
-      # =====================================================
-      #
-      # results/
-      #
-      #     Relatórios tradicionais do Robot.
-      #
-      #
-      # output/allure/
-      #
-      #     Resultados brutos do Allure.
-      #
-      #
-      # output/allure-report/
-      #
-      #     Relatório HTML.
-      #
-      # =====================================================
-
       - name: Preparar diretórios
-
         run: |
-
           echo "========================================"
           echo "PREPARANDO DIRETÓRIOS"
           echo "========================================"
 
           rm -rf results
-
           rm -rf output/allure
-
           rm -rf output/allure-report
 
           mkdir -p results
-
           mkdir -p output/allure
-
           mkdir -p output/allure-report
 
-
-# =====================================================
-# MÓDULO 8
-# HISTÓRICO ALLURE
-# =====================================================
-#
-# Neste primeiro momento estamos validando:
-#
-# Robot
-# +
-# Allure
-# +
-# geração do relatório
-# +
-# publicação dos artifacts
-#
-# O mecanismo de recuperação do histórico entre
-# execuções será implementado na próxima etapa.
-#
-# =====================================================
-
-- name: Preparar histórico Allure
-
-  if: always()
-
-  run: |
-
-    echo "========================================"
-    echo "PREPARANDO HISTÓRICO ALLURE"
-    echo "========================================"
-
-    mkdir -p output/allure/history
-
-    echo "Primeira etapa do histórico preparada."
-
-      # =====================================================
-      # PREPARAR HISTÓRICO
-      # =====================================================
-
-      - name: Preparar histórico Allure
-
-        if: always()
-
-        run: |
-
-          echo "========================================"
-          echo "PREPARANDO HISTÓRICO ALLURE"
-          echo "========================================"
-
-          mkdir -p output/allure/history
-
-          if [ -d "output/previous-history" ]; then
-
-            echo "Histórico anterior encontrado."
-
-            cp -R output/previous-history/. \
-              output/allure/history/
-
-            echo ""
-
-            echo "Arquivos do histórico:"
-
-            find output/allure/history \
-              -maxdepth 1 \
-              -type f \
-              -print
-
-          else
-
-            echo "Nenhum histórico anterior encontrado."
-
-            echo "Primeira execução do Allure."
-
-          fi
-
-
-      # =====================================================
-      # 7. EXECUTAR TESTES ROBOT + ALLURE
-      # =====================================================
-      #
-      # O listener Allure acompanha a execução do Robot.
-      #
-      # Resultados Robot:
-      #
-      #     results/
-      #
-      # Resultados Allure:
-      #
-      #     output/allure/
-      #
-      # =====================================================
-
       - name: Executar testes Robot + Allure
-
         continue-on-error: true
-
         run: |
-
           echo "========================================"
           echo "EXECUTANDO TESTES ROBOT FRAMEWORK"
           echo "========================================"
@@ -350,21 +77,9 @@ jobs:
             --outputdir results \
             tests
 
-
-      # =====================================================
-      # 8. VERIFICAR RESULTADOS
-      # =====================================================
-      #
-      # Etapa de diagnóstico.
-      #
-      # =====================================================
-
       - name: Verificar resultados
-
         if: always()
-
         run: |
-
           echo "========================================"
           echo "RESULTADOS ROBOT"
           echo "========================================"
@@ -375,7 +90,6 @@ jobs:
             | sort || true
 
           echo ""
-
           echo "========================================"
           echo "RESULTADOS ALLURE"
           echo "========================================"
@@ -385,27 +99,9 @@ jobs:
             -type f \
             | sort || true
 
-
-      # =====================================================
-      # 9. PREPARAR CONFIGURAÇÃO ALLURE
-      # =====================================================
-      #
-      # Configuração permanente:
-      #
-      #     config/allure/
-      #
-      # Resultado da execução:
-      #
-      #     output/allure/
-      #
-      # =====================================================
-
       - name: Preparar configuração Allure
-
         if: always()
-
         run: |
-
           echo "========================================"
           echo "PREPARANDO CONFIGURAÇÃO ALLURE"
           echo "========================================"
@@ -421,27 +117,12 @@ jobs:
           RobotFramework=7.4.2
           EOF
 
-
-      # =====================================================
-      # 10. CRIAR EXECUTOR.JSON
-      # =====================================================
-      #
-      # Identifica a execução dentro do Allure.
-      #
-      # =====================================================
-
       - name: Criar executor.json
-
         if: always()
-
         env:
-
           BUILD_ORDER: ${{ github.run_number }}
-
           BUILD_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
         run: |
-
           echo "========================================"
           echo "CRIANDO EXECUTOR.JSON"
           echo "========================================"
@@ -457,32 +138,11 @@ jobs:
           }
           EOF
 
-          echo ""
-
           cat output/allure/executor.json
 
-
-      # =====================================================
-      # MÓDULO 9
-      # GERAR RELATÓRIO ALLURE
-      # =====================================================
-      #
-      # Os resultados brutos:
-      #
-      #     output/allure/
-      #
-      # são transformados pelo Allure em:
-      #
-      #     output/allure-report/
-      #
-      # =====================================================
-
       - name: Gerar relatório Allure
-
         if: always()
-
         run: |
-
           echo "========================================"
           echo "GERANDO RELATÓRIO ALLURE"
           echo "========================================"
@@ -492,180 +152,65 @@ jobs:
             -o output/allure-report \
             --clean
 
-
-      # =====================================================
-      # VALIDAR RELATÓRIO
-      # =====================================================
-
       - name: Validar relatório Allure
-
         if: always()
-
         run: |
-
           echo "========================================"
           echo "VALIDANDO RELATÓRIO ALLURE"
           echo "========================================"
 
           if [ -f "output/allure-report/index.html" ]; then
-
             echo "Relatório Allure gerado com sucesso."
-
-            echo ""
-
-            echo "Arquivos principais:"
-
-            find output/allure-report \
-              -maxdepth 1 \
-              -type f \
-              -print
-
           else
-
             echo "ERRO: index.html não encontrado."
-
             exit 1
-
           fi
 
-
-      # =====================================================
-      # VALIDAR HISTÓRICO
-      # =====================================================
-
       - name: Validar histórico Allure
-
         if: always()
-
         run: |
-
           echo "========================================"
           echo "VALIDANDO HISTÓRICO ALLURE"
           echo "========================================"
 
           if [ -d "output/allure-report/history" ]; then
-
             echo "Histórico encontrado."
-
-            echo ""
-
             find output/allure-report/history \
               -maxdepth 1 \
               -type f \
               -print
-
           else
-
             echo "ATENÇÃO: history não encontrado."
-
           fi
 
-
-      # =====================================================
-      # MÓDULO 10
-      # PUBLICAR RELATÓRIO ALLURE
-      # =====================================================
-      #
-      # IMPORTANTE:
-      #
-      # Existe apenas UM upload com o nome:
-      #
-      #     allure-report
-      #
-      # Isso evita o erro 409 Conflict.
-      #
-      # =====================================================
-
       - name: Upload relatório Allure
-
         if: always()
-
         uses: actions/upload-artifact@v4
-
         with:
-
           name: allure-report
-
           path: output/allure-report/
-
           retention-days: 30
-
-
-      # =====================================================
-      # PUBLICAR RESULTADOS BRUTOS ALLURE
-      # =====================================================
-      #
-      # Existe apenas UM upload:
-      #
-      #     allure-results
-      #
-      # =====================================================
 
       - name: Upload resultados Allure
-
         if: always()
-
         uses: actions/upload-artifact@v4
-
         with:
-
           name: allure-results
-
           path: output/allure/
-
           retention-days: 30
 
-
-      # =====================================================
-      # PUBLICAR HISTÓRICO
-      # =====================================================
-      #
-      # O history gerado pelo Allure será armazenado para
-      # ser utilizado pela próxima execução.
-      #
-      # Existe apenas UM upload:
-      #
-      #     allure-history
-      #
-      # =====================================================
-
       - name: Upload histórico Allure
-
         if: always()
-
         uses: actions/upload-artifact@v4
-
         with:
-
           name: allure-history
-
           path: output/allure-report/history/
-
           retention-days: 90
 
-
-      # =====================================================
-      # PUBLICAR RESULTADOS TRADICIONAIS DO ROBOT
-      # =====================================================
-      #
-      # Mantemos:
-      #
-      #     output.xml
-      #     log.html
-      #     report.html
-      #
-      # =====================================================
-
       - name: Upload relatórios Robot
-
         if: always()
-
         uses: actions/upload-artifact@v4
-
         with:
-
           name: robot-results-allure-pipeline
-
           path: results/
-
           retention-days: 30
