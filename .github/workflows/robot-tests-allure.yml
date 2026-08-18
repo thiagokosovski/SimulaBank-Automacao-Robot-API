@@ -244,36 +244,39 @@ jobs:
           mkdir -p output/allure-report
 
 
-      # =====================================================
-      # MÓDULO 8
-      # RECUPERAR HISTÓRICO ALLURE
-      # =====================================================
-      #
-      # O runner do GitHub é temporário.
-      #
-      # Portanto o histórico da execução anterior precisa
-      # ser recuperado.
-      #
-      # Na primeira execução ainda não teremos o artifact.
-      #
-      # Isso é esperado.
-      #
-      # =====================================================
+# =====================================================
+# MÓDULO 8
+# HISTÓRICO ALLURE
+# =====================================================
+#
+# Neste primeiro momento estamos validando:
+#
+# Robot
+# +
+# Allure
+# +
+# geração do relatório
+# +
+# publicação dos artifacts
+#
+# O mecanismo de recuperação do histórico entre
+# execuções será implementado na próxima etapa.
+#
+# =====================================================
 
-      - name: Recuperar histórico Allure
+- name: Preparar histórico Allure
 
-        id: restore-history
+  if: always()
 
-        continue-on-error: true
+  run: |
 
-        uses: actions/download-artifact@v4
+    echo "========================================"
+    echo "PREPARANDO HISTÓRICO ALLURE"
+    echo "========================================"
 
-        with:
+    mkdir -p output/allure/history
 
-          name: allure-history
-
-          path: output/previous-history/
-
+    echo "Primeira etapa do histórico preparada."
 
       # =====================================================
       # PREPARAR HISTÓRICO
