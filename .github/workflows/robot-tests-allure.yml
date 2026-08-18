@@ -7,35 +7,28 @@ name: Robot Tests - Allure
 
 
 # =========================================================
-# DISPARO DO WORKFLOW
-# =========================================================
-#
-# Neste primeiro momento a execução será MANUAL.
-#
-# No GitHub:
-#
-# Actions
-#   ↓
-# Robot Tests - Allure
-#   ↓
-# Run workflow
-#
-# Depois que tudo estiver funcionando,
-# poderemos adicionar push na branch main.
-#
-# =========================================================
-
-# =========================================================
 # MÓDULO 10
 # GATILHOS DO WORKFLOW
+# =========================================================
+#
+# O workflow pode ser executado de duas formas:
+#
+# 1. Automaticamente após push na main
+#
+# 2. Manualmente pelo GitHub Actions
+#
+# Neste momento NÃO utilizaremos pull_request.
+#
+# Isso evita executar os mesmos testes duas vezes durante
+# o Pull Request, já que a pipeline tradicional já possui
+# esse gatilho.
+#
 # =========================================================
 
 on:
 
   # -------------------------------------------------------
   # EXECUÇÃO AUTOMÁTICA
-  #
-  # Executa quando houver push na branch principal.
   # -------------------------------------------------------
 
   push:
@@ -46,25 +39,17 @@ on:
 
 
   # -------------------------------------------------------
-  # EXECUÇÃO EM PULL REQUEST
-  #
-  # Executa quando um Pull Request tiver como destino
-  # a branch main.
-  # -------------------------------------------------------
-
-  pull_request:
-
-    branches:
-
-      - main
-
-
-  # -------------------------------------------------------
   # EXECUÇÃO MANUAL
+  # -------------------------------------------------------
   #
-  # Continua disponível através do botão:
+  # GitHub:
   #
-  # Actions → Robot Tests - Allure → Run workflow
+  # Actions
+  #   ↓
+  # Robot Tests - Allure
+  #   ↓
+  # Run workflow
+  #
   # -------------------------------------------------------
 
   workflow_dispatch:
@@ -94,11 +79,10 @@ jobs:
       # 1. CHECKOUT DO PROJETO
       # =====================================================
       #
-      # O GitHub Actions executa o workflow em uma máquina
-      # temporária.
+      # O GitHub Actions executa o workflow em um runner
+      # temporário.
       #
-      # Portanto precisamos baixar o código do nosso
-      # repositório para essa máquina.
+      # Precisamos baixar o código do repositório.
       #
       # =====================================================
 
@@ -130,13 +114,7 @@ jobs:
       # 3. VERIFICAR AMBIENTE
       # =====================================================
       #
-      # Esta etapa serve para diagnóstico.
-      #
-      # Vamos verificar:
-      #
-      # - Python
-      # - Node
-      # - NPM
+      # Etapa utilizada para diagnóstico.
       #
       # =====================================================
 
@@ -168,13 +146,13 @@ jobs:
       # 4. INSTALAR DEPENDÊNCIAS
       # =====================================================
       #
-      # O requirements.txt já possui:
+      # As bibliotecas Python são instaladas através do
+      # requirements.txt.
       #
-      # robotframework==7.4.2
-      # allure-robotframework==2.16.0
+      # Entre elas temos:
       #
-      # Portanto não precisamos instalar essas bibliotecas
-      # manualmente.
+      # robotframework
+      # allure-robotframework
       #
       # =====================================================
 
@@ -195,18 +173,16 @@ jobs:
       # 5. INSTALAR ALLURE COMMANDLINE
       # =====================================================
       #
-      # Temos duas partes diferentes:
+      # Existem duas partes:
       #
       # allure-robotframework
       #
-      #     Integra o Robot Framework com o Allure.
+      #     Integra o Robot Framework ao Allure.
       #
       #
       # allure-commandline
       #
       #     Gera o relatório HTML.
-      #
-      # Portanto precisamos dos dois.
       #
       # =====================================================
 
@@ -233,7 +209,7 @@ jobs:
       #
       # results/
       #
-      #     Relatórios tradicionais do Robot Framework.
+      #     Relatórios tradicionais do Robot.
       #
       #
       # output/allure/
@@ -243,7 +219,7 @@ jobs:
       #
       # output/allure-report/
       #
-      #     Relatório HTML final.
+      #     Relatório HTML.
       #
       # =====================================================
 
@@ -267,26 +243,20 @@ jobs:
 
           mkdir -p output/allure-report
 
+
       # =====================================================
       # MÓDULO 8
-      # RECUPERAR HISTÓRICO DO ALLURE
+      # RECUPERAR HISTÓRICO ALLURE
       # =====================================================
       #
-      # O GitHub Actions utiliza runners temporários.
+      # O runner do GitHub é temporário.
       #
-      # Portanto o histórico de uma execução anterior não
-      # permanece automaticamente disponível.
+      # Portanto o histórico da execução anterior precisa
+      # ser recuperado.
       #
-      # Vamos recuperar o artifact:
+      # Na primeira execução ainda não teremos o artifact.
       #
-      #     allure-history
-      #
-      # e colocar seu conteúdo em:
-      #
-      #     output/allure/history/
-      #
-      # Se ainda não existir histórico, a execução continuará
-      # normalmente.
+      # Isso é esperado.
       #
       # =====================================================
 
@@ -306,7 +276,7 @@ jobs:
 
 
       # =====================================================
-      # COPIAR HISTÓRICO PARA OS RESULTADOS ALLURE
+      # PREPARAR HISTÓRICO
       # =====================================================
 
       - name: Preparar histórico Allure
@@ -330,7 +300,7 @@ jobs:
 
             echo ""
 
-            echo "Histórico disponível para esta execução:"
+            echo "Arquivos do histórico:"
 
             find output/allure/history \
               -maxdepth 1 \
@@ -341,26 +311,24 @@ jobs:
 
             echo "Nenhum histórico anterior encontrado."
 
-            echo "Esta será a primeira execução."
+            echo "Primeira execução do Allure."
 
           fi
+
 
       # =====================================================
       # 7. EXECUTAR TESTES ROBOT + ALLURE
       # =====================================================
       #
-      # Aqui o Robot Framework executa os testes.
+      # O listener Allure acompanha a execução do Robot.
       #
-      # O listener:
-      #
-      #     allure_robotframework
-      #
-      # acompanha a execução e gera os resultados utilizados
-      # posteriormente pelo Allure.
-      #
-      # Os resultados tradicionais do Robot ficam em:
+      # Resultados Robot:
       #
       #     results/
+      #
+      # Resultados Allure:
+      #
+      #     output/allure/
       #
       # =====================================================
 
@@ -384,12 +352,7 @@ jobs:
       # 8. VERIFICAR RESULTADOS
       # =====================================================
       #
-      # Esta etapa é apenas para diagnóstico.
-      #
-      # Não altera os resultados.
-      #
-      # Vamos verificar se o Robot e o Allure produziram
-      # arquivos.
+      # Etapa de diagnóstico.
       #
       # =====================================================
 
@@ -403,7 +366,10 @@ jobs:
           echo "RESULTADOS ROBOT"
           echo "========================================"
 
-          find results -maxdepth 2 -type f | sort || true
+          find results \
+            -maxdepth 2 \
+            -type f \
+            | sort || true
 
           echo ""
 
@@ -411,18 +377,21 @@ jobs:
           echo "RESULTADOS ALLURE"
           echo "========================================"
 
-          find output/allure -maxdepth 2 -type f | sort || true
+          find output/allure \
+            -maxdepth 2 \
+            -type f \
+            | sort || true
 
 
       # =====================================================
-      # 9. PREPARAR CONFIGURAÇÃO DO ALLURE
+      # 9. PREPARAR CONFIGURAÇÃO ALLURE
       # =====================================================
       #
-      # A configuração permanente do projeto fica em:
+      # Configuração permanente:
       #
       #     config/allure/
       #
-      # Durante o CI copiamos essa configuração para:
+      # Resultado da execução:
       #
       #     output/allure/
       #
@@ -454,24 +423,7 @@ jobs:
       # 10. CRIAR EXECUTOR.JSON
       # =====================================================
       #
-      # O executor.json identifica a execução no Allure.
-      #
-      # O GitHub fornece:
-      #
-      #     github.run_number
-      #
-      # que podemos utilizar como número da execução.
-      #
-      # Exemplo:
-      #
-      #     Execução #1
-      #     Execução #2
-      #     Execução #3
-      #
-      # Neste módulo estamos apenas preparando essa
-      # identificação.
-      #
-      # O histórico será implementado posteriormente.
+      # Identifica a execução dentro do Allure.
       #
       # =====================================================
 
@@ -504,23 +456,19 @@ jobs:
 
           echo ""
 
-          echo "executor.json:"
-
           cat output/allure/executor.json
 
 
       # =====================================================
-      # 11. GERAR RELATÓRIO ALLURE
+      # MÓDULO 9
+      # GERAR RELATÓRIO ALLURE
       # =====================================================
       #
-      # Agora temos os resultados em:
+      # Os resultados brutos:
       #
       #     output/allure/
       #
-      # O Allure Commandline transforma esses resultados
-      # em um relatório HTML.
-      #
-      # O resultado será:
+      # são transformados pelo Allure em:
       #
       #     output/allure-report/
       #
@@ -541,18 +489,9 @@ jobs:
             -o output/allure-report \
             --clean
 
+
       # =====================================================
-      # MÓDULO 9
-      # VALIDAR RELATÓRIO ALLURE
-      # =====================================================
-      #
-      # Nesta etapa não modificamos o relatório.
-      #
-      # Apenas verificamos se o Allure conseguiu gerar
-      # corretamente os arquivos HTML.
-      #
-      # Isso facilita o diagnóstico no GitHub Actions.
-      #
+      # VALIDAR RELATÓRIO
       # =====================================================
 
       - name: Validar relatório Allure
@@ -562,12 +501,12 @@ jobs:
         run: |
 
           echo "========================================"
-          echo "VALIDAÇÃO DO RELATÓRIO ALLURE"
+          echo "VALIDANDO RELATÓRIO ALLURE"
           echo "========================================"
 
-          if [ -d "output/allure-report" ]; then
+          if [ -f "output/allure-report/index.html" ]; then
 
-            echo "Diretório do relatório encontrado."
+            echo "Relatório Allure gerado com sucesso."
 
             echo ""
 
@@ -580,19 +519,15 @@ jobs:
 
           else
 
-            echo "ERRO: relatório Allure não foi encontrado."
+            echo "ERRO: index.html não encontrado."
 
             exit 1
 
           fi
 
+
       # =====================================================
-      # 9.1 VALIDAR HISTÓRICO
-      # =====================================================
-      #
-      # O diretório history é importante para a evolução
-      # das execuções do Allure.
-      #
+      # VALIDAR HISTÓRICO
       # =====================================================
 
       - name: Validar histórico Allure
@@ -602,7 +537,7 @@ jobs:
         run: |
 
           echo "========================================"
-          echo "VALIDAÇÃO DO HISTÓRICO"
+          echo "VALIDANDO HISTÓRICO ALLURE"
           echo "========================================"
 
           if [ -d "output/allure-report/history" ]; then
@@ -622,16 +557,19 @@ jobs:
 
           fi
 
+
       # =====================================================
-      # 9.2 PUBLICAR RELATÓRIO ALLURE
+      # MÓDULO 10
+      # PUBLICAR RELATÓRIO ALLURE
       # =====================================================
       #
-      # O relatório HTML completo será armazenado pelo
-      # GitHub Actions.
+      # IMPORTANTE:
       #
-      # Artifact:
+      # Existe apenas UM upload com o nome:
       #
       #     allure-report
+      #
+      # Isso evita o erro 409 Conflict.
       #
       # =====================================================
 
@@ -649,12 +587,14 @@ jobs:
 
           retention-days: 30
 
+
       # =====================================================
-      # 9.3 PUBLICAR RESULTADOS BRUTOS
+      # PUBLICAR RESULTADOS BRUTOS ALLURE
       # =====================================================
       #
-      # Esses arquivos são úteis principalmente para
-      # investigação e diagnóstico.
+      # Existe apenas UM upload:
+      #
+      #     allure-results
       #
       # =====================================================
 
@@ -672,49 +612,17 @@ jobs:
 
           retention-days: 30
 
-      # =====================================================
-      # 9.4 PUBLICAR RESULTADOS ROBOT
-      # =====================================================
-      #
-      # Mantemos os relatórios nativos do Robot Framework.
-      #
-      # Isso é importante porque:
-      #
-      # Robot Framework
-      #       +
-      # Allure
-      #
-      # fornecem visões diferentes da mesma execução.
-      #
-      # =====================================================
-
-      - name: Upload relatórios Robot
-
-        if: always()
-
-        uses: actions/upload-artifact@v4
-
-        with:
-
-          name: robot-results-allure-pipeline
-
-          path: results/
-
-          retention-days: 30
 
       # =====================================================
-      # MÓDULO 8
-      # SALVAR HISTÓRICO PARA A PRÓXIMA EXECUÇÃO
+      # PUBLICAR HISTÓRICO
       # =====================================================
       #
-      # O Allure acabou de gerar:
+      # O history gerado pelo Allure será armazenado para
+      # ser utilizado pela próxima execução.
       #
-      #     output/allure-report/history/
+      # Existe apenas UM upload:
       #
-      # Esse diretório contém os dados necessários para que
-      # a próxima execução consiga continuar o histórico.
-      #
-      # Vamos armazená-lo como artifact.
+      #     allure-history
       #
       # =====================================================
 
@@ -732,70 +640,12 @@ jobs:
 
           retention-days: 90
 
-      # =====================================================
-      # 12. PUBLICAR RELATÓRIO ALLURE
-      # =====================================================
-      #
-      # O GitHub Actions permite armazenar arquivos gerados
-      # pelo workflow como Artifacts.
-      #
-      # O artifact:
-      #
-      #     allure-report
-      #
-      # conterá o relatório HTML completo.
-      #
-      # =====================================================
-
-      - name: Upload relatório Allure
-
-        if: always()
-
-        uses: actions/upload-artifact@v4
-
-        with:
-
-          name: allure-report
-
-          path: output/allure-report/
-
-          retention-days: 30
-
 
       # =====================================================
-      # 13. PUBLICAR RESULTADOS BRUTOS DO ALLURE
+      # PUBLICAR RESULTADOS TRADICIONAIS DO ROBOT
       # =====================================================
       #
-      # Também vamos guardar os resultados utilizados para
-      # gerar o relatório.
-      #
-      # Isso será útil para diagnóstico.
-      #
-      # =====================================================
-
-      - name: Upload resultados Allure
-
-        if: always()
-
-        uses: actions/upload-artifact@v4
-
-        with:
-
-          name: allure-results
-
-          path: output/allure/
-
-          retention-days: 30
-
-
-      # =====================================================
-      # 14. PUBLICAR RELATÓRIOS TRADICIONAIS DO ROBOT
-      # =====================================================
-      #
-      # O Allure não substitui os relatórios nativos
-      # do Robot Framework.
-      #
-      # Continuaremos mantendo:
+      # Mantemos:
       #
       #     output.xml
       #     log.html
