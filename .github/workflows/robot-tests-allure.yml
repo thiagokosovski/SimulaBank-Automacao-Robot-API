@@ -252,9 +252,13 @@ jobs:
 
           rm -rf output/allure-report
 
+          rm -rf results
+
           mkdir -p output/allure
 
           mkdir -p output/allure-report
+
+          mkdir -p results
 
       # ======================================================
       # 9. RECUPERAR HISTÓRICO DO ALLURE
@@ -270,10 +274,10 @@ jobs:
 
           path: output/allure-history
 
-          key: allure-history-${{ github.ref_name }}-${{ github.run_id }}
+          key: allure-history-${{ github.ref_name }}
 
           restore-keys: |
-            allure-history-${{ github.ref_name }}-
+            allure-history-${{ github.ref_name }}
 
 
       # ======================================================
@@ -349,6 +353,93 @@ jobs:
             tests
 
 
+      # ======================================================
+      # 13. VALIDAR EXECUÇÃO ATUAL DO ROBOT
+      # ======================================================
+
+      - name: Validar execução atual
+
+        if: always()
+
+        run: |
+
+          echo "=========================================="
+
+          echo "VALIDAÇÃO DA EXECUÇÃO ATUAL"
+
+          echo "=========================================="
+
+          echo ""
+
+          echo "Data/hora do runner:"
+
+          date
+
+          echo ""
+
+          echo "Arquivos de resultados Robot:"
+
+          find results -type f | sort
+
+          echo ""
+
+          echo "Quantidade de arquivos Allure:"
+
+          find output/allure -type f | wc -l
+
+          echo ""
+
+          echo "Quantidade de resultados Allure:"
+
+          find output/allure -name "*-result.json" | wc -l
+
+          echo ""
+
+          echo "Arquivos de resultado Allure:"
+
+          find output/allure -name "*-result.json" | sort
+
+
+      - name: Executar testes com Allure
+
+        id: robot
+
+        continue-on-error: true
+
+        run: |
+
+          echo "=========================================="
+
+          echo "INÍCIO DOS TESTES ROBOT"
+
+          echo "=========================================="
+
+          date
+
+          echo ""
+
+          robot \
+            --listener allure_robotframework \
+            --outputdir results \
+            tests
+
+          ROBOT_EXIT_CODE=$?
+
+          echo ""
+
+          echo "=========================================="
+
+          echo "FIM DOS TESTES ROBOT"
+
+          echo "=========================================="
+
+          date
+
+          echo ""
+
+          echo "Código de retorno Robot: $ROBOT_EXIT_CODE"
+
+          exit $ROBOT_EXIT_CODE
 
       # ======================================================
       # 13. GERAR EXECUTOR.JSON
@@ -474,7 +565,7 @@ jobs:
 
           path: output/allure-history
 
-          key: allure-history-${{ github.ref_name }}-${{ github.run_id }}
+          key: allure-history-${{ github.ref_name }}
 
           
 
