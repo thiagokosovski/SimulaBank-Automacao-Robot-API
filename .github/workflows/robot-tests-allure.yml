@@ -511,6 +511,33 @@ jobs:
             -o output/allure-report \
             --clean
 
+
+      # ======================================================
+      # 15.1. EVITAR CACHE DO INDEX.HTML
+      #
+      # Adiciona um identificador único da execução ao HTML.
+      # Isso força o navegador a considerar o arquivo atualizado.
+      #
+      # Não altera:
+      # - resultados JSON
+      # - histórico
+      # - categories.json
+      # - executor.json
+      # ======================================================
+
+      - name: Atualizar versão do index.html
+
+        if: always()
+
+        run: |
+
+          CACHE_BUSTER="$(date +%s)"
+
+          echo "<!-- Cache-Buster: ${CACHE_BUSTER} | GitHub Actions #${{ github.run_number }} -->" >> output/allure-report/index.html
+
+          echo "Cache-busting aplicado: ${CACHE_BUSTER}"
+
+
       # ======================================================
       # 16. SALVAR NOVO HISTÓRICO DO ALLURE
       # ======================================================
@@ -685,7 +712,7 @@ jobs:
 
         if: always()
 
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
 
         with:
 
@@ -754,4 +781,4 @@ jobs:
 
         id: deployment
 
-        uses: actions/deploy-pages@v4          
+        uses: actions/deploy-pages@v5         
