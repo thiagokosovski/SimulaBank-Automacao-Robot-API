@@ -202,7 +202,21 @@ jobs:
 
           java-version: "17"
 
+      # ======================================================
+      # 6. CONFIGURAR NODE.JS
+      #
+      # O Allure Commandline é instalado via npm.
+      # Utilizamos Node.js 22 para evitar o warning
+      # de depreciação do Node.js 20.
+      # ======================================================
 
+      - name: Configurar Node.js
+
+        uses: actions/setup-node@v5
+
+        with:
+
+          node-version: "22"
 
       # ======================================================
       # 6. INSTALAR ALLURE COMMANDLINE
@@ -271,7 +285,7 @@ jobs:
 
           cp config/allure/categories.json output/allure/
 
-          cp config/allure/environment.properties output/allure/
+          cp config/allure/environment.github.properties output/allure/environment.properties
 
 
 
@@ -385,6 +399,40 @@ jobs:
             -o output/allure-report \
             --clean
 
+
+      - name: Preparar histórico do Allure
+
+        if: always()
+
+        run: |
+
+          mkdir -p output/allure-history
+
+          if [ -d "output/allure-report/history" ]; then
+
+            cp -R output/allure-report/history/. output/allure-history/
+
+            echo "Histórico Allure preparado."
+
+          else
+
+            echo "Nenhum histórico anterior disponível."
+
+          fi
+
+      - name: Upload histórico Allure
+
+        if: always()
+
+        uses: actions/upload-artifact@v4
+
+        with:
+
+          name: allure-history
+
+          path: output/allure-history/
+
+          if-no-files-found: warn
 
 
       # ======================================================
