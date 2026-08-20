@@ -219,7 +219,7 @@ jobs:
           node-version: "22"
 
       # ======================================================
-      # 6. INSTALAR ALLURE COMMANDLINE
+      # 7. INSTALAR ALLURE COMMANDLINE
       #
       # Utilizamos a mesma versão que você utiliza localmente.
       #
@@ -236,20 +236,10 @@ jobs:
 
           allure --version
 
-      # ======================================================
-      # 6. CONFIGURAR NODE.JS
-      # ======================================================
 
-      - name: Configurar Node.js
-
-        uses: actions/setup-node@v5
-
-        with:
-
-          node-version: "22"
 
       # ======================================================
-      # 7. PREPARAR DIRETÓRIOS DO ALLURE
+      # 8. PREPARAR DIRETÓRIOS DO ALLURE
       #
       # O workflow começa sempre com um diretório limpo.
       # ======================================================
@@ -266,10 +256,55 @@ jobs:
 
           mkdir -p output/allure-report
 
+      # ======================================================
+      # 9. RECUPERAR HISTÓRICO DO ALLURE
+      #
+      # Recupera o histórico da execução anterior.
+      # ======================================================
+
+      - name: Recuperar histórico do Allure
+
+        uses: actions/cache/restore@v4
+
+        with:
+
+          path: output/allure-history
+
+          key: allure-history-${{ github.ref_name }}-${{ github.run_id }}
+
+          restore-keys: |
+            allure-history-${{ github.ref_name }}-
 
 
       # ======================================================
-      # 8. COPIAR CONFIGURAÇÕES DO ALLURE
+      # 10. PREPARAR HISTÓRICO PARA O ALLURE
+      #
+      # O Allure espera o histórico dentro de:
+      #
+      # output/allure/history
+      # ======================================================
+
+      - name: Preparar histórico do Allure
+
+        run: |
+
+          mkdir -p output/allure/history
+
+          if [ -d "output/allure-history" ]; then
+
+            cp -R output/allure-history/. output/allure/history/
+
+            echo "Histórico anterior encontrado."
+
+          else
+
+            echo "Nenhum histórico anterior encontrado."
+
+          fi
+
+
+      # ======================================================
+      # 11. COPIAR CONFIGURAÇÕES DO ALLURE
       #
       # A configuração oficial fica em:
       #
@@ -290,7 +325,7 @@ jobs:
 
 
       # ======================================================
-      # 9. EXECUTAR ROBOT FRAMEWORK + ALLURE
+      # 12. EXECUTAR ROBOT FRAMEWORK + ALLURE
       #
       # IMPORTANTE:
       #
@@ -316,7 +351,7 @@ jobs:
 
 
       # ======================================================
-      # 10. GERAR EXECUTOR.JSON
+      # 13. GERAR EXECUTOR.JSON
       #
       # Identifica a execução dentro do relatório Allure.
       # ======================================================
@@ -348,7 +383,7 @@ jobs:
 
 
       # ======================================================
-      # 11. VERIFICAR RESULTADOS DO ALLURE
+      # 14. VERIFICAR RESULTADOS DO ALLURE
       # ======================================================
 
       - name: Verificar resultados Allure
@@ -382,7 +417,7 @@ jobs:
 
 
       # ======================================================
-      # 12. GERAR RELATÓRIO HTML
+      # 15. GERAR RELATÓRIO HTML
       #
       # O Allure transforma os resultados JSON em um
       # relatório navegável.
@@ -399,12 +434,17 @@ jobs:
             -o output/allure-report \
             --clean
 
+      # ======================================================
+      # 16. SALVAR NOVO HISTÓRICO DO ALLURE
+      # ======================================================
 
-      - name: Preparar histórico do Allure
+      - name: Atualizar histórico do Allure
 
         if: always()
 
         run: |
+
+          rm -rf output/allure-history
 
           mkdir -p output/allure-history
 
@@ -412,13 +452,31 @@ jobs:
 
             cp -R output/allure-report/history/. output/allure-history/
 
-            echo "Histórico Allure preparado."
+            echo "Histórico do Allure atualizado."
 
           else
 
-            echo "Nenhum histórico anterior disponível."
+            echo "Nenhum histórico foi gerado."
 
           fi
+
+      # ======================================================
+      # 17. SALVAR HISTÓRICO NO CACHE
+      # ======================================================
+
+      - name: Salvar histórico do Allure
+
+        if: always()
+
+        uses: actions/cache/save@v4
+
+        with:
+
+          path: output/allure-history
+
+          key: allure-history-${{ github.ref_name }}-${{ github.run_id }}
+
+          
 
       - name: Upload histórico Allure
 
@@ -436,7 +494,7 @@ jobs:
 
 
       # ======================================================
-      # 13. VERIFICAR RELATÓRIO GERADO
+      # 18. VERIFICAR RELATÓRIO GERADO
       # ======================================================
 
       - name: Verificar relatório Allure
@@ -469,7 +527,7 @@ jobs:
           fi
 
       # ======================================================
-      # 14. CONFIGURAR GITHUB PAGES
+      # 19. CONFIGURAR GITHUB PAGES
       # ======================================================
 
       - name: Configurar GitHub Pages
@@ -479,7 +537,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       # ======================================================
-      # 14. PUBLICAR RESULTADOS TRADICIONAIS DO ROBOT
+      # 20. PUBLICAR RESULTADOS TRADICIONAIS DO ROBOT
       # ======================================================
 
       - name: Upload relatórios Robot
@@ -499,7 +557,7 @@ jobs:
 
 
       # ======================================================
-      # 15. PUBLICAR RESULTADOS BRUTOS DO ALLURE
+      # 21. PUBLICAR RESULTADOS BRUTOS DO ALLURE
       #
       # Úteis para diagnóstico e para futuras etapas
       # de histórico.
@@ -522,7 +580,7 @@ jobs:
 
 
       # ======================================================
-      # 16. PUBLICAR RELATÓRIO HTML DO ALLURE
+      # 22. PUBLICAR RELATÓRIO HTML DO ALLURE
       #
       # Este é o artefato que você poderá baixar e abrir
       # localmente.
@@ -543,7 +601,7 @@ jobs:
           if-no-files-found: error
 
       # ======================================================
-      # 17. PREPARAR RELATÓRIO ALLURE PARA GITHUB PAGES
+      # 23. PREPARAR RELATÓRIO ALLURE PARA GITHUB PAGES
       # ======================================================
 
       - name: Upload Allure para GitHub Pages
@@ -557,7 +615,7 @@ jobs:
           path: output/allure-report
 
       # ======================================================
-      # 18. FINALIZAR COM O STATUS REAL DOS TESTES
+      # 24. FINALIZAR COM O STATUS REAL DOS TESTES
       #
       # O relatório já foi gerado.
       #
