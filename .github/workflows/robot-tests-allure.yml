@@ -277,7 +277,7 @@ jobs:
           key: allure-history-${{ github.ref_name }}
 
           restore-keys: |
-            allure-history-${{ github.ref_name }}
+            allure-history-${{ github.ref_name }}-
 
 
       # ======================================================
@@ -551,7 +551,7 @@ jobs:
 
           path: output/allure-history
 
-          key: allure-history-${{ github.ref_name }}
+          key: allure-history-${{ github.ref_name }}-${{ github.run_number }}
 
           
 
