@@ -109,10 +109,10 @@ Resource    allure/allure.resource
 
 
 ############################################################
-# Configuração centralizada do Allure
+# Variáveis centralizadas do Allure
 #
-# Contém os diretórios utilizados pela camada de relatórios
-# Allure.
+# Arquivo Robot Framework contendo as variáveis utilizadas
+# pela camada de reporting.
 ############################################################
 
-Variables    allure/allure_variables.robot
+Resource    allure/allure_variables.robot
