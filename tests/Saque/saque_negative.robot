@@ -352,3 +352,77 @@ CT-SAQ-005 - Realizar Saque Com Método GET
 
     Log To Console
     ...    ${json}    
+
+
+############################################################
+# 18.2.5
+#
+# CT-SAQ-006
+#
+# Objetivo:
+#
+# Validar erro
+#
+############################################################
+
+CT-SAQ-005 - Validar Saque Com erro
+
+    [Tags]
+    ...    saque
+    ...    post
+    ...    positivo
+    ...    smoke
+    ...    CT-SAQ-001
+
+
+    ########################################################
+    # Executa saque
+    #
+    # O teste escolhe qual payload deseja utilizar.
+    #
+    ########################################################
+
+    ${response}=
+    ...    Realizar Saque Com Método GET
+    ...    resources/payloads/saque/saque_valido.json
+
+
+    ########################################################
+    # Valida status HTTP
+    #
+    # Esperado:
+    #
+    # 200 OK
+    #
+    ########################################################
+
+    Validar Status HTTP
+    ...    ${response}
+    ...    400
+
+
+    ########################################################
+    # Converte resposta HTTP para JSON
+    ########################################################
+
+    ${json}=
+    ...    Converter Resposta para JSON
+    ...    ${response}
+
+ 
+
+    ########################################################
+    # Valida regras específicas do saque
+    ########################################################
+
+    Validar Método GET Não Permitido
+    ...    ${json}
+
+
+    ########################################################
+    # Exibe retorno no console
+    ########################################################
+
+    Log To Console
+    ...    ${json}    
+

@@ -1,0 +1,254 @@
+{
+    "execution": {
+        "total": 37,
+        "passed": 36,
+        "failed": 1,
+        "skipped": 0,
+        "success_rate": 97.3,
+        "failures": [
+            {
+                "name": "CT-PIX-013 - PIX com simulação de erro",
+                "status": "failed",
+                "message": "400 != 250",
+                "keywords": [
+                    {
+                        "name": "Consultar Destinatário PIX",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Realizar Login Destinatário PIX",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Get Base Url",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Get Environment Variable",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Get Environment Variable",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Create Session",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Montar Body Login",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Create Dictionary",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Executar Login",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "POST On Session",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Salvar Tokens",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Validar Status HTTP",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Should Be Equal As Integers",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Converter Resposta para JSON",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Set Variable",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Set Global Variable",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Set Global Variable",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Realizar GET Autenticado",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Criar Header JWT",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Create Dictionary",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "GET On Session",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Validar Status HTTP",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Should Be Equal As Integers",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Converter Resposta para JSON",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Set Variable",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Extrair CPF do Destinatário",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Get From Dictionary",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Should Not Be Empty",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Log To Console",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Load Json From File",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Realizar PIX",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Realizar Login",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Get Base Url",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Get Username",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Get Password",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Create Session",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Montar Body Login",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Create Dictionary",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Executar Login",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "POST On Session",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Salvar Tokens",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Validar Status HTTP",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Should Be Equal As Integers",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Converter Resposta para JSON",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Set Variable",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Set Global Variable",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Set Global Variable",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Create Dictionary",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Realizar POST Autenticado",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Criar Header JWT",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Create Dictionary",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "POST On Session",
+                        "status": "PASS"
+                    },
+                    {
+                        "name": "Validar Status HTTP",
+                        "status": "FAIL"
+                    },
+                    {
+                        "name": "Should Be Equal As Integers",
+                        "status": "FAIL"
+                    },
+                    {
+                        "name": "Converter Resposta para JSON",
+                        "status": "NOT RUN"
+                    },
+                    {
+                        "name": "Validar PIX Valor Negativo",
+                        "status": "NOT RUN"
+                    },
+                    {
+                        "name": "Log To Console",
+                        "status": "NOT RUN"
+                    }
+                ]
+            }
+        ]
+    },
+    "environment": {
+        "application": "SimulaBank",
+        "framework": "Robot Framework"
+    },
+    "source": {
+        "results_directory": "C:\\Projetos\\SimulaBank-Automacao-robot-api\\results",
+        "robot_output": "C:\\Projetos\\SimulaBank-Automacao-robot-api\\results\\output.xml"
+    }
+}

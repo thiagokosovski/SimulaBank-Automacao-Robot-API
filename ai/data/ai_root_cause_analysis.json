@@ -1,0 +1,36 @@
+{
+    "execution": {
+        "total": 37,
+        "passed": 36,
+        "failed": 1,
+        "skipped": 0,
+        "success_rate": 97.3
+    },
+    "analysis": {
+        "type": "deterministic",
+        "engine": "SimulaBank AI Quality Analyzer",
+        "version": "1.0"
+    },
+    "failures": [
+        {
+            "test": "CT-PIX-013 - PIX com simulação de erro",
+            "category": "Product defects",
+            "impact": "Medium",
+            "error_type": "http",
+            "probable_layer": "api",
+            "failed_keyword": "Validar Status HTTP",
+            "message": "400 != 250",
+            "root_cause": {
+                "cause": "A API rejeitou a requisição enviada pelo teste. A causa provável está relacionada ao payload, regra de validação ou dados utilizados na requisição.",
+                "confidence": 0.85,
+                "evidence": [
+                    "A resposta HTTP recebida foi 400.",
+                    "Keyword com falha: Validar Status HTTP",
+                    "Camada provável: api",
+                    "Mensagem original: 400 != 250"
+                ],
+                "recommendation": "Verificar o payload enviado, os dados utilizados pelo cenário e as regras de validação do endpoint."
+            }
+        }
+    ]
+}

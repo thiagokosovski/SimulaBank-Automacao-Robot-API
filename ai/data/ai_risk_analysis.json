@@ -1,0 +1,36 @@
+{
+    "risk": {
+        "score": 50,
+        "level": "MEDIUM",
+        "release_recommendation": "REVIEW"
+    },
+    "execution": {
+        "total": 37,
+        "passed": 36,
+        "failed": 1,
+        "success_rate": 97.3
+    },
+    "factors": [
+        {
+            "factor": "Test failures detected",
+            "impact": "HIGH",
+            "description": "1 test(s) failed during the execution."
+        },
+        {
+            "factor": "Execution contains failures",
+            "impact": "LOW",
+            "description": "Success rate is 97.3%."
+        },
+        {
+            "factor": "Failure analysis",
+            "impact": "MEDIUM",
+            "category": "Product defects",
+            "layer": "api"
+        }
+    ],
+    "recommendations": [
+        "Investigate failed automated tests.",
+        "Review failures in the api layer.",
+        "Perform additional regression testing before release."
+    ]
+}

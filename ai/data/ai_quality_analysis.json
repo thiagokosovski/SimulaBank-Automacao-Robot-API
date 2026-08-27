@@ -1,0 +1,26 @@
+{
+    "execution": {
+        "total": 37,
+        "passed": 36,
+        "failed": 1,
+        "skipped": 0,
+        "success_rate": 97.3
+    },
+    "failures": [
+        {
+            "test": "CT-PIX-013 - PIX com simulação de erro",
+            "status": "failed",
+            "category": "Product defects",
+            "impact": "Medium",
+            "error_type": "http",
+            "probable_layer": "api",
+            "failed_keyword": "Validar Status HTTP",
+            "message": "400 != 250",
+            "analysis": {
+                "probable_cause": "Falha durante a validação da resposta HTTP.",
+                "confidence": 0.85,
+                "recommendation": "Investigar o status HTTP retornado e comparar com o status esperado pelo cenário."
+            }
+        }
+    ]
+}
