@@ -1,0 +1,17 @@
+{
+    "provider": "CorporateProvider",
+    "model": "corporate-model",
+    "status": "success",
+    "analysis": {
+        "probable_cause": "Possível inconsistência no status HTTP retornado pela API.",
+        "confidence": 0.91,
+        "impact": "HIGH",
+        "risk": "HIGH",
+        "regression": true,
+        "recommendations": [
+            "Investigar o endpoint PIX.",
+            "Comparar o status esperado com o status retornado.",
+            "Executar regressão adicional."
+        ]
+    }
+}

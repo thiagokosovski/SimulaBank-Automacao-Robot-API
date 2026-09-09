@@ -1,0 +1,6 @@
+{
+    "provider": "CorporateProvider",
+    "model": "corporate-model",
+    "status": "not_configured",
+    "message": "AI_CORPORATE_URL não configurada."
+}

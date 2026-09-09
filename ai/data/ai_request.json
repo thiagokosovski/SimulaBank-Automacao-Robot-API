@@ -1,0 +1,68 @@
+{
+    "request_type": "quality_analysis",
+    "application": "SimulaBank",
+    "framework": "Robot Framework",
+    "execution": {
+        "total": 37,
+        "passed": 36,
+        "failed": 1,
+        "skipped": 0,
+        "success_rate": 97.3
+    },
+    "failures": [
+        {
+            "test": "CT-PIX-013 - PIX com simulação de erro",
+            "status": "failed",
+            "category": "Product defects",
+            "impact": "Medium",
+            "error_type": "http",
+            "probable_layer": "api",
+            "failed_keyword": "Validar Status HTTP",
+            "message": "400 != 250",
+            "analysis": {
+                "probable_cause": "Falha durante a validação da resposta HTTP.",
+                "confidence": 0.85,
+                "recommendation": "Investigar o status HTTP retornado e comparar com o status esperado pelo cenário."
+            }
+        }
+    ],
+    "risk": {
+        "score": 50,
+        "level": "MEDIUM",
+        "release_recommendation": "REVIEW",
+        "factors": [
+            {
+                "factor": "Test failures detected",
+                "impact": "HIGH",
+                "description": "1 test(s) failed during the execution."
+            },
+            {
+                "factor": "Execution contains failures",
+                "impact": "LOW",
+                "description": "Success rate is 97.3%."
+            },
+            {
+                "factor": "Failure analysis",
+                "impact": "MEDIUM",
+                "category": "Product defects",
+                "layer": "api"
+            }
+        ]
+    },
+    "recommendations": [
+        "Investigate failed automated tests.",
+        "Review failures in the api layer.",
+        "Perform additional regression testing before release."
+    ],
+    "instructions": {
+        "objective": "Analyze the software quality execution using the provided evidence.",
+        "expected_analysis": [
+            "Identify probable root causes.",
+            "Classify the failures.",
+            "Estimate impact.",
+            "Evaluate regression risk.",
+            "Recommend additional tests.",
+            "Provide release recommendations."
+        ]
+    }
+}
