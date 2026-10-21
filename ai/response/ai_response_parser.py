@@ -4,50 +4,32 @@ MÓDULO 8.10.10 - AI RESPONSE PARSER
 ============================================================
 
 Responsabilidade:
+Normalizar as respostas dos diferentes AI Providers.
 
-Normalizar a resposta retornada pelo motor de IA.
+Compatibilidade:
+- Respostas estruturadas em dicionário.
+- Respostas textuais, como a análise do Gemini.
 
-Este módulo NÃO:
-
-- chama a IA;
-- realiza requisições HTTP;
-- executa testes;
-- altera o Robot Framework;
-- altera o Allure;
-- calcula o resultado dos testes.
-
-Sua responsabilidade é:
-
-    RESPOSTA DA IA
-          ↓
-    FORMATO PADRONIZADO
-          ↓
-    SISTEMA DE QUALIDADE
-
-Objetivo:
-
-Permitir que diferentes providers de IA retornem
-um resultado consistente para o restante do sistema.
-
+Este módulo não chama a IA e não executa testes.
 ============================================================
 """
 
 import json
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 # ============================================================
-# CONFIGURAÇÃO
+# CAMINHOS
 # ============================================================
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 DATA_DIR = PROJECT_ROOT / "ai" / "data"
 
-OUTPUT_FILE = (
-    DATA_DIR / "ai_response_normalized.json"
-)
+ENGINE_RESULT_FILE = DATA_DIR / "ai_engine_result.json"
+
+OUTPUT_FILE = DATA_DIR / "ai_response_normalized.json"
 
 
 # ============================================================
@@ -55,241 +37,236 @@ OUTPUT_FILE = (
 # ============================================================
 
 class AIResponseParser:
-    """
-    Responsável por normalizar respostas da IA.
-    """
+    """Normaliza respostas retornadas pelos AI Providers."""
 
-    def parse(
-        self,
-        response: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def parse(self, response: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Normaliza a resposta recebida.
+        Converte a resposta do provider para um formato comum.
 
-        Args:
-            response:
-                Resposta retornada pelo provider.
-
-        Returns:
-            Resposta em formato padronizado.
+        Se a análise for textual, preserva o conteúdo em raw_text.
+        Não inventa informações estruturadas que não foram fornecidas.
         """
 
         if not isinstance(response, dict):
-
             raise ValueError(
                 "A resposta da IA deve ser um dicionário."
             )
 
+        provider = response.get("provider", "unknown")
+        model = response.get("model", "unknown")
+        status = response.get("status", "unknown")
 
-        # ====================================================
-        # IDENTIFICAÇÃO DO PROVIDER
-        # ====================================================
+        analysis = response.get("analysis", {})
 
-        provider = response.get(
-            "provider",
-            "unknown"
-        )
+        # ----------------------------------------------------
+        # CASO 1: ANÁLISE ESTRUTURADA
+        # ----------------------------------------------------
 
-        model = response.get(
-            "model",
-            "unknown"
-        )
+        if isinstance(analysis, dict):
 
-        status = response.get(
-            "status",
-            "unknown"
-        )
+            probable_cause = analysis.get("probable_cause")
+            confidence = analysis.get("confidence")
+            impact = analysis.get("impact")
+            risk = analysis.get("risk")
+            regression = analysis.get("regression")
+            recommendations = analysis.get("recommendations", [])
+            raw_text = analysis.get("raw_text")
 
+            if not isinstance(recommendations, list):
+                recommendations = []
 
-        # ====================================================
-        # ANÁLISE
-        # ====================================================
+        # ----------------------------------------------------
+        # CASO 2: ANÁLISE TEXTUAL, COMO A DO GEMINI
+        # ----------------------------------------------------
 
-        analysis = response.get(
-            "analysis",
-            {}
-        )
+        elif isinstance(analysis, str):
 
+            probable_cause = None
+            confidence = None
+            impact = None
+            risk = None
+            regression = None
 
-        if not isinstance(
-            analysis,
-            dict
-        ):
+            # Extrai recomendações presentes na seção específica.
+            recommendations = extract_recommendations(analysis)
 
-            analysis = {}
+            # Preserva integralmente a resposta original.
+            raw_text = analysis
 
+        # ----------------------------------------------------
+        # CASO 3: FORMATO NÃO RECONHECIDO
+        # ----------------------------------------------------
 
-        # ====================================================
+        else:
+
+            probable_cause = None
+            confidence = None
+            impact = None
+            risk = None
+            regression = None
+            recommendations = []
+            raw_text = None
+
+        # ----------------------------------------------------
         # RESULTADO PADRONIZADO
-        # ====================================================
+        # ----------------------------------------------------
 
-        normalized = {
-
+        return {
             "provider": provider,
-
             "model": model,
-
             "status": status,
-
             "analysis": {
-
-                "probable_cause": analysis.get(
-                    "probable_cause"
-                ),
-
-                "confidence": analysis.get(
-                    "confidence"
-                ),
-
-                "impact": analysis.get(
-                    "impact"
-                ),
-
-                "risk": analysis.get(
-                    "risk"
-                ),
-
-                "regression": analysis.get(
-                    "regression"
-                ),
-
-                "recommendations": analysis.get(
-                    "recommendations",
-                    []
-                )
-            }
+                "probable_cause": probable_cause,
+                "confidence": confidence,
+                "impact": impact,
+                "risk": risk,
+                "regression": regression,
+                "recommendations": recommendations,
+                "raw_text": raw_text,
+            },
         }
 
 
-        return normalized
+# ============================================================
+# EXTRAÇÃO DE RECOMENDAÇÕES DA ANÁLISE TEXTUAL
+# ============================================================
+
+def extract_recommendations(raw_text: str) -> list:
+    """
+    Extrai recomendações da seção específica da análise textual.
+
+    Preserva o conteúdo original de cada item.
+    Não cria recomendações que não estejam no texto.
+    """
+
+    if not isinstance(raw_text, str) or not raw_text.strip():
+        return []
+
+    lines = raw_text.splitlines()
+
+    recommendations = []
+    inside_section = False
+
+    for line in lines:
+
+        stripped_line = line.strip()
+
+        # Identifica o início da seção.
+        if stripped_line == "### 7. Recomendações":
+            inside_section = True
+            continue
+
+        # Encerra a extração ao encontrar outro título de seção.
+        if inside_section and stripped_line.startswith("### "):
+            break
+
+        if not inside_section:
+            continue
+
+        # Extrai somente itens de lista Markdown.
+        if stripped_line.startswith("* "):
+
+            recommendation = stripped_line[2:].strip()
+
+            if recommendation:
+                recommendations.append(recommendation)
+
+    return recommendations
 
 
 # ============================================================
-# SALVAR RESULTADO
+# LEITURA DO RESULTADO REAL DO ENGINE
 # ============================================================
 
-def save_response(
-    response: Dict[str, Any]
-) -> Path:
-    """
-    Salva a resposta normalizada.
-    """
+def load_engine_response() -> Dict[str, Any]:
+    """Carrega a resposta real salva pelo AI Engine."""
+
+    if not ENGINE_RESULT_FILE.exists():
+        raise FileNotFoundError(
+            "Resultado do AI Engine não encontrado: "
+            f"{ENGINE_RESULT_FILE}"
+        )
+
+    with open(
+        ENGINE_RESULT_FILE,
+        "r",
+        encoding="utf-8",
+    ) as file:
+        response = json.load(file)
+
+    if not isinstance(response, dict):
+        raise ValueError(
+            "O arquivo do AI Engine deve conter um objeto JSON."
+        )
+
+    return response
+
+
+# ============================================================
+# SALVAR RESPOSTA NORMALIZADA
+# ============================================================
+
+def save_response(response: Dict[str, Any]) -> Path:
+    """Salva a resposta normalizada em JSON."""
 
     DATA_DIR.mkdir(
         parents=True,
-        exist_ok=True
+        exist_ok=True,
     )
 
     with open(
         OUTPUT_FILE,
         "w",
-        encoding="utf-8"
+        encoding="utf-8",
     ) as file:
-
         json.dump(
             response,
             file,
             indent=4,
-            ensure_ascii=False
+            ensure_ascii=False,
         )
 
-
     return OUTPUT_FILE
-
-
-# ============================================================
-# TESTE DO MÓDULO
-# ============================================================
-
-def main():
-
-    print("==========================================")
-    print("MÓDULO 8.10.10 - AI RESPONSE PARSER")
-    print("==========================================")
-    print()
-
-
-    # ========================================================
-    # RESPOSTA SIMULADA
-    # ========================================================
-
-    mock_response = {
-
-        "provider": "CorporateProvider",
-
-        "model": "corporate-model",
-
-        "status": "success",
-
-        "analysis": {
-
-            "probable_cause": (
-                "Possível inconsistência no "
-                "status HTTP retornado pela API."
-            ),
-
-            "confidence": 0.91,
-
-            "impact": "HIGH",
-
-            "risk": "HIGH",
-
-            "regression": True,
-
-            "recommendations": [
-
-                "Investigar o endpoint PIX.",
-
-                "Comparar o status esperado "
-                "com o status retornado.",
-
-                "Executar regressão adicional."
-            ]
-        }
-    }
-
-
-    # ========================================================
-    # PARSER
-    # ========================================================
-
-    parser = AIResponseParser()
-
-    normalized = parser.parse(
-        mock_response
-    )
-
-
-    # ========================================================
-    # SALVAR
-    # ========================================================
-
-    output = save_response(
-        normalized
-    )
-
-
-    print(
-        "Resposta normalizada criada:"
-    )
-
-    print(output)
-
-    print()
-
-    print(
-        "=========================================="
-    )
-
-    print(
-        "AI Response Parser funcionando."
-    )
 
 
 # ============================================================
 # EXECUÇÃO DIRETA
 # ============================================================
 
-if __name__ == "__main__":
+def main():
 
+    print("=" * 60)
+    print("MÓDULO 8.10.10 - AI RESPONSE PARSER")
+    print("=" * 60)
+
+    print()
+    print("Carregando resposta real do AI Engine...")
+
+    response = load_engine_response()
+
+    parser = AIResponseParser()
+
+    normalized = parser.parse(response)
+
+    output = save_response(normalized)
+
+    print()
+    print(f"Provider: {normalized['provider']}")
+    print(f"Modelo: {normalized['model']}")
+    print(f"Status: {normalized['status']}")
+
+    raw_text = normalized["analysis"]["raw_text"]
+
+    if raw_text:
+        print("Análise textual preservada: Sim")
+    else:
+        print("Análise textual preservada: Não necessária")
+
+    print()
+    print(f"Resposta normalizada: {output}")
+    print()
+    print("AI Response Parser concluído.")
+
+
+if __name__ == "__main__":
     main()

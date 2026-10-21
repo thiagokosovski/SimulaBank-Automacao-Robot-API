@@ -41,6 +41,20 @@ A Factory permite trocar o motor da IA sem alterar:
 
 ============================================================
 """
+"""
+============================================================
+MÓDULO 8.10.3 - AI PROVIDER FACTORY
+============================================================
+
+Responsabilidade:
+Selecionar o provider de IA configurado no sistema.
+
+A Factory não executa a análise.
+
+A seleção do provider não deve exigir alterações no
+Robot Framework, Allure ou módulos de análise de qualidade.
+============================================================
+"""
 
 from ai.config.ai_config import get_config
 
@@ -50,24 +64,12 @@ from ai.config.ai_config import get_config
 # ============================================================
 
 def get_ai_provider():
-    """
-    Retorna o provider configurado.
-
-    A escolha é realizada através da variável:
-
-        AI_PROVIDER
-
-    Exemplos:
-
-        local
-        openai
-        azure
-        corporate
-    """
+    """Cria e retorna o provider de IA configurado."""
 
     config = get_config()
 
     provider = config["provider"]
+    model = config["model"]
 
 
     # ========================================================
@@ -78,9 +80,7 @@ def get_ai_provider():
 
         from ai.providers.local_provider import LocalProvider
 
-        return LocalProvider(
-            model=config["model"]
-        )
+        return LocalProvider(model=model)
 
 
     # ========================================================
@@ -91,9 +91,7 @@ def get_ai_provider():
 
         from ai.providers.openai_provider import OpenAIProvider
 
-        return OpenAIProvider(
-            model=config["model"]
-        )
+        return OpenAIProvider(model=model)
 
 
     # ========================================================
@@ -104,9 +102,7 @@ def get_ai_provider():
 
         from ai.providers.azure_provider import AzureProvider
 
-        return AzureProvider(
-            model=config["model"]
-        )
+        return AzureProvider(model=model)
 
 
     # ========================================================
@@ -117,9 +113,18 @@ def get_ai_provider():
 
         from ai.providers.corporate_provider import CorporateProvider
 
-        return CorporateProvider(
-            model=config["model"]
-        )
+        return CorporateProvider(model=model)
+
+
+    # ========================================================
+    # PROVIDER GEMINI
+    # ========================================================
+
+    if provider == "gemini":
+
+        from ai.providers.gemini_provider import GeminiProvider
+
+        return GeminiProvider(model=model)
 
 
     # ========================================================
@@ -137,9 +142,9 @@ def get_ai_provider():
 
 if __name__ == "__main__":
 
-    print("==========================================")
+    print("=" * 50)
     print("MÓDULO 8.10.3 - AI PROVIDER FACTORY")
-    print("==========================================")
+    print("=" * 50)
     print()
 
     print("Lendo configuração do AI Provider...")
@@ -147,10 +152,9 @@ if __name__ == "__main__":
     provider = get_ai_provider()
 
     print()
-
     print("Provider selecionado:")
     print(provider.__class__.__name__)
 
+    print(f"Modelo: {provider.model}")
     print()
-
     print("Factory funcionando.")

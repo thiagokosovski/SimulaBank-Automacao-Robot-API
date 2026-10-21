@@ -195,7 +195,9 @@ Apresente a análise de forma organizada.
 
             max_attempts = 3
 
-            retry_delays = [2, 4, 8]
+            # Espera progressiva para erros HTTP 503.
+            # Intervalos entre as tentativas: 30 e 60 segundos.
+            retry_delays = [30, 60]
 
 
             # ------------------------------------------------

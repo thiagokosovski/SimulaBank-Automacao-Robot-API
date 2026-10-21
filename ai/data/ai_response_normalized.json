@@ -1,17 +1,14 @@
 {
-    "provider": "CorporateProvider",
-    "model": "corporate-model",
-    "status": "success",
+    "provider": "GeminiProvider",
+    "model": "gemini-3.8-flash",
+    "status": "failed",
     "analysis": {
-        "probable_cause": "Possível inconsistência no status HTTP retornado pela API.",
-        "confidence": 0.91,
-        "impact": "HIGH",
-        "risk": "HIGH",
-        "regression": true,
-        "recommendations": [
-            "Investigar o endpoint PIX.",
-            "Comparar o status esperado com o status retornado.",
-            "Executar regressão adicional."
-        ]
+        "probable_cause": null,
+        "confidence": null,
+        "impact": null,
+        "risk": null,
+        "regression": null,
+        "recommendations": [],
+        "raw_text": null
     }
 }

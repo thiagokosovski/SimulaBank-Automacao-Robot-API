@@ -32,8 +32,23 @@ de ambiente / GitHub Secrets.
 ============================================================
 """
 
+"""
+============================================================
+MÓDULO 8.10.2 - CONFIGURAÇÃO DO AI PROVIDER
+============================================================
+
+Responsabilidade:
+Centralizar as configurações do motor de IA.
+
+Este módulo não realiza chamadas para provedores de IA.
+Credenciais devem ser fornecidas por variáveis de ambiente.
+============================================================
+"""
+
 import os
+
 from dotenv import load_dotenv
+
 
 # ============================================================
 # CARREGAR VARIÁVEIS DO .ENV
@@ -49,12 +64,12 @@ load_dotenv()
 AI_PROVIDER = os.getenv(
     "AI_PROVIDER",
     "local"
-)
+).strip().lower()
 
 AI_MODEL = os.getenv(
     "AI_MODEL",
     "test-model"
-)
+).strip()
 
 
 # ============================================================
@@ -65,7 +80,8 @@ SUPPORTED_PROVIDERS = [
     "local",
     "openai",
     "azure",
-    "corporate"
+    "corporate",
+    "gemini",
 ]
 
 
@@ -74,14 +90,9 @@ SUPPORTED_PROVIDERS = [
 # ============================================================
 
 def validate_config():
-    """
-    Valida se o provider configurado é suportado.
-    """
+    """Valida a configuração do provider e do modelo."""
 
-    provider = AI_PROVIDER.lower()
-
-    if provider not in SUPPORTED_PROVIDERS:
-
+    if AI_PROVIDER not in SUPPORTED_PROVIDERS:
         raise ValueError(
             f"AI_PROVIDER inválido: {AI_PROVIDER}. "
             f"Valores permitidos: "
@@ -89,7 +100,6 @@ def validate_config():
         )
 
     if not AI_MODEL:
-
         raise ValueError(
             "AI_MODEL não foi configurado."
         )
@@ -100,12 +110,13 @@ def validate_config():
 # ============================================================
 
 def get_config():
+    """Retorna a configuração validada."""
 
     validate_config()
 
     return {
-        "provider": AI_PROVIDER.lower(),
-        "model": AI_MODEL
+        "provider": AI_PROVIDER,
+        "model": AI_MODEL,
     }
 
 
@@ -115,15 +126,13 @@ def get_config():
 
 if __name__ == "__main__":
 
-    print("==========================================")
+    print("=" * 50)
     print("MÓDULO 8.10.2 - CONFIGURAÇÃO DA IA")
-    print("==========================================")
-    print()
+    print("=" * 50)
 
     config = get_config()
 
     print(f"Provider: {config['provider']}")
     print(f"Model:    {config['model']}")
-
     print()
     print("Configuração válida.")
